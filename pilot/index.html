@@ -675,6 +675,13 @@ html:root body.glass nav.bottom{background:color-mix(in srgb,var(--card) 62%,tra
 #drw .path{font-size:12px;color:var(--muted);display:block}
 .drwhl{outline:3px solid var(--leaf);outline-offset:2px}
 html:root[data-theme="dark"] header.top .brand,html:root[data-theme="dark"] #drw .hd b,html:root[data-theme="dark"] #drw .it .tg{color:var(--forest)}
+/* v178: header always one line */
+html:root .top-in{flex-wrap:nowrap!important;gap:6px}
+html:root header.top .brand{min-width:0!important;flex:1 1 auto;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:clamp(15px,4.6vw,19px)}
+html:root header.top .hbtn,html:root header.top #menuBtn{flex:none;white-space:nowrap}
+html:root header.top #roleBtn{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:380px){html:root header.top .hbtn{padding:4px 8px;font-size:12px}}
+html:root header.top #lyBtn{background:transparent;color:var(--ink);border:1px solid var(--line);margin-left:0;flex:none;white-space:nowrap;font-weight:600}
 </style>
 
 <div class="scenery" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 L120 70 L230 115 L360 40 L470 105 L600 55 L720 110 L850 35 L980 100 L1100 60 L1200 95 L1200 200 L0 200Z" fill="var(--hill1)" opacity=".7"/><path d="M0 150 Q150 110 300 140 T600 135 T900 140 T1200 130 L1200 200 L0 200Z" fill="var(--hill2)" opacity=".75"/><path d="M0 178 Q200 160 420 176 T820 172 T1200 170 L1200 200 L0 200Z" fill="var(--river)" opacity=".9"/></svg></div>
