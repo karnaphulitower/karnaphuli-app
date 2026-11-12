@@ -1,0 +1,42 @@
+name: Android APK
+on:
+  push:
+    branches: [main]
+    paths: ['android/**', '.github/workflows/android.yml']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v3
+        with: { gradle-version: '8.7' }
+      - name: Signing key (from GitHub secrets, if set)
+        env: { KS_B64: '${{ secrets.KS_B64 }}' }
+        run: |
+          if [ -n "$KS_B64" ]; then echo "$KS_B64" | base64 -d > "$RUNNER_TEMP/kt.jks"; echo "KT_KS=$RUNNER_TEMP/kt.jks" >> $GITHUB_ENV; else echo "No KS_B64 secret: debug signing (test only)"; fi
+      - name: Build APK
+        working-directory: android
+        env:
+          KT_VCODE: ${{ github.run_number }}
+          KT_VNAME: 2.0.${{ github.run_number }}
+          KT_KS_PASS: ${{ secrets.KS_PASS }}
+        run: gradle --no-daemon assembleRelease
+      - name: Rename
+        run: cp android/app/build/outputs/apk/release/app-release.apk karnaphuli.apk
+      - uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-latest
+          name: Android app (latest)
+          body: "কর্ণফুলী টাওয়ার Android app — build ${{ github.run_number }}"
+          prerelease: false
+          make_latest: true
+          files: karnaphuli.apk
+      - name: Move tag to this build
+        run: |
+          git tag -f android-latest
+          git push -f origin android-latest
