@@ -1,4 +1,4 @@
-<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>কর্ণফুলী টাওয়ার Pilot</title><meta name="theme-color" content="#2f6b4f"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>*{box-sizing:border-box}body{margin:0}</style><script src="firebase-app-compat.js"></script><script src="firebase-auth-compat.js"></script><script src="firebase-firestore-compat.js"></script><script>window.KT_FB={"config": {"apiKey": "AIzaSyAz8kKVIyJ2ffb5WmDvxY3hytZSDWWc5EY", "authDomain": "karnaphuli-tower.firebaseapp.com", "projectId": "karnaphuli-tower", "storageBucket": "karnaphuli-tower.firebasestorage.app", "messagingSenderId": "986988380609", "appId": "1:986988380609:web:a305815c25b8674d1eef40"}, "env": "pilot", "emu": false};if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js")</script></head><body>
+<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>কর্ণফুলী টাওয়ার Pilot</title><meta name="theme-color" content="#fffdf8"><link rel="manifest" href="manifest.json"><link rel="icon" href="icon.svg"><link rel="apple-touch-icon" href="icon-192.png"><meta name="apple-mobile-web-app-capable" content="yes"><style>*{box-sizing:border-box}body{margin:0}</style><script src="firebase-app-compat.js"></script><script src="firebase-auth-compat.js"></script><script src="firebase-firestore-compat.js"></script><script>window.KT_FB={"config": {"apiKey": "AIzaSyAz8kKVIyJ2ffb5WmDvxY3hytZSDWWc5EY", "authDomain": "karnaphuli-tower.firebaseapp.com", "projectId": "karnaphuli-tower", "storageBucket": "karnaphuli-tower.firebasestorage.app", "messagingSenderId": "986988380609", "appId": "1:986988380609:web:a305815c25b8674d1eef40"}, "env": "pilot", "emu": false};if("serviceWorker" in navigator&&location.protocol==="https:")navigator.serviceWorker.register("sw.js")</script></head><body>
 <meta name="claude:viewport-fit-sides" content="cover">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@600;700&family=Noto+Sans+Bengali:wght@400;600;700&family=Tiro+Bangla&family=Anek+Bangla:wght@400;600;700&family=Baloo+Da+2:wght@400;600;700&display=swap">
 <style>
@@ -633,13 +633,54 @@ body.lyedit nav.bottom{pointer-events:auto}
 /* v176: neutral dark mode (black/grey, theme colour only as accent) */
 html:root[data-theme="dark"]{--sky:#121212!important;--mint:#0c0c0c!important;--card:#1c1c1e;--soft:#232326!important;--line:#333338;--hill1:#1e1e20!important;--hill2:#262628!important;--river:#202024!important;--greybg:#26262a}
 html:root[data-theme="dark"] body{background:#0c0c0c;background-color:#0c0c0c}
-html:root[data-theme="dark"] header.top,html:root[data-theme="dark"] body::before{background:#161618!important}
-html:root[data-theme="dark"] body.glass header.top{background:color-mix(in srgb,#161618 80%,transparent)!important}
+
+
+
+/* v177: calm bars — header uses the same colour as the bottom tab bar */
+html:root header.top{background:var(--card)!important;color:var(--ink);box-shadow:0 1px 0 var(--line);transition:transform .28s ease}
+html:root body::before{background:var(--card)!important}
+html:root header.top .brand{color:var(--leaf)}
+html:root header.top .hbtn{background:transparent;color:var(--ink);border:1px solid var(--line)}
+html:root header.top .hbtn:hover{background:var(--soft)}
+nav.bottom{transition:transform .28s ease}
+body.barshide header.top{transform:translateY(calc(-100% - env(safe-area-inset-top,0px) - 4px))}
+body.barshide nav.bottom{transform:translateY(110%)}
+body.barshide .sos{transform:translateY(64px)}
+.sos{transition:transform .28s ease}
+/* glass: whole bar incl. phone-edge strips */
+html:root body.glass header.top{background:color-mix(in srgb,var(--card) 62%,transparent)!important}
+html:root body.glass::before{background:color-mix(in srgb,var(--card) 62%,transparent)!important;-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px)}
+html:root body.glass nav.bottom{background:color-mix(in srgb,var(--card) 62%,transparent)!important;box-shadow:none!important}
+/* ☰ menu */
+#menuBtn{background:transparent;border:0;color:var(--ink);font-size:22px;line-height:1;padding:4px 6px;margin-left:-6px;cursor:pointer;border-radius:10px}
+#menuBtn:hover{background:var(--soft)}
+#drw{position:fixed;inset:0;z-index:90;display:none}
+#drw.on{display:block}
+#drw .bk{position:absolute;inset:0;background:rgba(0,0,0,.35);opacity:0;transition:opacity .2s}
+#drw.on.in .bk{opacity:1}
+#drw .pn{position:absolute;top:0;bottom:0;left:0;width:min(330px,86vw);background:var(--card);color:var(--ink);box-shadow:4px 0 24px rgba(0,0,0,.2);display:flex;flex-direction:column;transform:translateX(-102%);transition:transform .22s ease;padding-top:env(safe-area-inset-top,0px)}
+#drw.on.in .pn{transform:none}
+#drw .hd{display:flex;align-items:center;gap:8px;padding:12px 14px;border-bottom:1px solid var(--line)}
+#drw .hd b{flex:1;font-family:var(--display);color:var(--leaf);font-size:18px}
+#drw .hd button{background:transparent;border:0;font-size:22px;color:var(--ink);cursor:pointer}
+#drw input{margin:10px 14px;width:calc(100% - 28px);padding:9px 12px;border:1px solid var(--line);border-radius:12px;background:var(--soft);color:var(--ink);font:inherit}
+#drw .ls{overflow:auto;flex:1;padding:0 6px 20px}
+#drw .it{display:flex;align-items:center;gap:6px;width:100%;text-align:left;background:transparent;border:0;color:var(--ink);font:inherit;padding:9px 8px;border-radius:10px;cursor:pointer}
+#drw .it:hover,#drw .it.cur{background:var(--soft)}
+#drw .it .tg{width:24px;height:24px;flex:none;border-radius:7px;border:1px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--leaf)}
+#drw .it .nm{flex:1}
+#drw .sub{margin-left:30px;border-left:2px solid var(--line);padding-left:4px}
+#drw .sub .it{padding:7px 8px;font-size:14px}
+#drw .sub .sub .it{font-size:13px;color:var(--muted)}
+#drw .path{font-size:12px;color:var(--muted);display:block}
+.drwhl{outline:3px solid var(--leaf);outline-offset:2px}
+html:root[data-theme="dark"] header.top .brand,html:root[data-theme="dark"] #drw .hd b,html:root[data-theme="dark"] #drw .it .tg{color:var(--forest)}
 </style>
 
 <div class="scenery" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 L120 70 L230 115 L360 40 L470 105 L600 55 L720 110 L850 35 L980 100 L1100 60 L1200 95 L1200 200 L0 200Z" fill="var(--hill1)" opacity=".7"/><path d="M0 150 Q150 110 300 140 T600 135 T900 140 T1200 130 L1200 200 L0 200Z" fill="var(--hill2)" opacity=".75"/><path d="M0 178 Q200 160 420 176 T820 172 T1200 170 L1200 200 L0 200Z" fill="var(--river)" opacity=".9"/></svg></div>
 
 <header class="top"><div class="top-in">
+  <button id="menuBtn" aria-label="Menu" data-act="drwopen">☰</button>
   <p class="brand"><span id="brandName">কর্ণফুলী টাওয়ার</span><small id="whoLine"></small></p>
   <button class="hbtn" data-act="role" id="roleBtn">ভূমিকা</button>
   <button class="hbtn" data-act="lang" id="langBtn">EN</button>
@@ -1159,6 +1200,7 @@ const THEMES=[['sage','শান্ত সবুজ ✦ (ডিফল্ট)','S
 ['choco','চকলেট-মিন্ট','Choc-mint',['#dff6ee','#f2fbf7','#2bb38a','#5b3a29','#47c9a0','#e3f7ef','#a7e3cf','#7fd4b8','#c8efe2']],
 ['dragon','ড্রাগন ফল','Dragon fruit',['#ffe1f0','#fff3f8','#d6247a','#8a0f4d','#ec5c9f','#ffe6f1','#f6a7cc','#ef7fb4','#ffcde3']],
 ['guava','পেয়ারা','Guava',['#ffe4dc','#f1f9e8','#f26b5b','#3f7d3a','#7cc36b','#fff0eb','#bfe3ad','#9fd48a','#ffd2c7']]];
+for(let i=THEMES.length-1;i>=0;i--)if(!THEMES[i][4])THEMES.splice(i,1);
 const TVARS=['--sky','--mint','--leaf','--forest','--teal','--soft','--hill1','--hill2','--river'];
 function glassLv(){const g=pref().glass;return g==null?'off':g}
 function glassApply(){const g=glassLv();document.body.classList.toggle('glass',g!=='off');document.body.classList.toggle('glass2',g==='full')}
@@ -2898,6 +2940,36 @@ function barColor(){try{const h=document.querySelector('header.top');let c=h?get
 {const _at=applyTheme;applyTheme=function(k){_at(k);setTimeout(barColor,30)}}
 try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>setTimeout(barColor,60))}catch(e){}
 setTimeout(barColor,300);
+
+/* v177: hide bars on scroll + ☰ page/tab/section menu */
+(function(){let lastY=window.scrollY,acc=0;window.addEventListener('scroll',()=>{const y=window.scrollY,d=y-lastY;lastY=y;const b=document.body;if(route==='chat'||document.querySelector('#ovl .ovl')||document.getElementById('drw')&&document.getElementById('drw').classList.contains('on')){b.classList.remove('barshide');return}if(y<60){b.classList.remove('barshide');acc=0;return}if((d>0&&acc<0)||(d<0&&acc>0))acc=0;acc+=d;if(acc>40)b.classList.add('barshide');else if(acc<-30)b.classList.remove('barshide')},{passive:true})})();
+{const _r=render;render=function(){_r.apply(this,arguments);if(!document.getElementById('menuBtn')){const t=document.querySelector('.top-in');if(t){const m=document.createElement('button');m.id='menuBtn';m.setAttribute('data-act','drwopen');m.textContent='☰';t.insertBefore(m,t.firstChild)}}}}
+const DRW={idx:{},open:{},q:'',key:''};
+function drwPages(){const out=[];const seen={};document.querySelectorAll('#nav [data-go]').forEach(b=>{const r=b.dataset.go;if(r&&r!=='more'&&!seen[r]){seen[r]=1;out.push([r,b.textContent.trim()])}});try{const d=document.createElement('div');d.innerHTML=P.more();d.querySelectorAll('[data-go]').forEach(b=>{const r=b.dataset.go;if(r&&!seen[r]&&r!=='logout'){seen[r]=1;out.push([r,b.textContent.trim()])}})}catch(e){}if(!seen.home)out.unshift(['home',L('হোম','Home')]);return out}
+function drwScan(r){const k=DRW.key+'|'+r;if(DRW.idx[k])return DRW.idx[k];let res={tabs:[],secs:[]};if(['chat','login','logout'].includes(r)||!P[r]){DRW.idx[k]=res;return res}
+  const sv={route,param,tm:JSON.stringify(TABMEM)},oldSave=window.save;try{window.save=function(){};route=r;param=null;const d=document.createElement('div');d.innerHTML=P[r]()||'';
+   const hs=el=>[...el.querySelectorAll('.card h3, .card>h4')].map(h=>h.textContent.replace(/\s+/g,' ').trim()).filter(x=>x&&x.length<70).filter((x,i,a)=>a.indexOf(x)===i).slice(0,30);
+   const bar=d.querySelector('.ptabs');if(bar){const tp=bar.dataset.tp;bar.querySelectorAll('[data-act="ptab"]').forEach(b=>{const t=b.dataset.t;const pn=d.querySelector('.tpane[data-tp="'+tp+'"][data-t="'+t+'"]');res.tabs.push({tp,t,name:b.textContent.replace(/\s+/g,' ').trim(),secs:pn?hs(pn):[]})})}else res.secs=hs(d)}catch(e){}finally{window.save=oldSave;route=sv.route;param=sv.param;try{TABMEM=JSON.parse(sv.tm)}catch(e){}}
+  DRW.idx[k]=res;return res}
+function drwGo(r,tp,t,sec){drwClose();if(tp){TABMEM[tp]=t}if(route===r)render();else go(r);if(sec)setTimeout(()=>{const h=[...document.querySelectorAll('#main .card h3, #main .card>h4')].find(x=>x.textContent.replace(/\s+/g,' ').trim()===sec&&x.offsetParent);if(h){const c=h.closest('.card')||h;const top=c.getBoundingClientRect().top+window.scrollY-80;window.scrollTo({top,behavior:'smooth'});c.classList.add('drwhl');setTimeout(()=>c.classList.remove('drwhl'),1600)}},260)}
+function drwList(){const q=DRW.q.trim().toLowerCase();const pages=drwPages();const esc2=x=>esc(x);let h='';
+  if(q){const hits=[];pages.forEach(([r,nm])=>{const sc=drwScan(r);const m=x=>x.toLowerCase().includes(q);if(m(nm))hits.push(['p',r,nm,'']);sc.tabs.forEach(tb=>{if(m(tb.name))hits.push(['t',r,tb.name,nm,tb]);tb.secs.forEach(s2=>{if(m(s2))hits.push(['s',r,s2,nm+' › '+tb.name,tb])})});sc.secs.forEach(s2=>{if(m(s2))hits.push(['s',r,s2,nm])})});
+    if(!hits.length)return '<p class="muted" style="padding:10px">'+L('কিছু পাওয়া যায়নি','Nothing found')+'</p>';
+    return hits.slice(0,60).map(x=>{const tb=x[4];return '<button class="it" data-act="drwgo" data-r="'+x[1]+'"'+(tb?' data-tp="'+tb.tp+'" data-t="'+tb.t+'"':'')+(x[0]==='s'?' data-sec="'+esc2(x[2])+'"':'')+'><span class="tg">'+(x[0]==='p'?'▤':x[0]==='t'?'▭':'•')+'</span><span class="nm">'+esc2(x[2])+(x[3]?'<span class="path">'+esc2(x[3])+'</span>':'')+'</span></button>'}).join('')}
+  pages.forEach(([r,nm])=>{const sc=drwScan(r);const multi=sc.tabs.length>1||sc.secs.length>1||(sc.tabs.length===1&&sc.tabs[0].secs.length>1);const op=DRW.open[r];
+    h+='<div><button class="it'+(route===r?' cur':'')+'" data-act="drwgo" data-r="'+r+'"><span class="tg" data-act="drwtg" data-r="'+r+'">'+(multi?(op?'−':'+'):'−')+'</span><span class="nm">'+esc2(nm)+'</span></button>';
+    if(multi&&op){h+='<div class="sub">';if(sc.tabs.length){sc.tabs.forEach(tb=>{const k2=r+'#'+tb.t;const op2=DRW.open[k2];const m2=tb.secs.length>1;h+='<button class="it" data-act="drwgo" data-r="'+r+'" data-tp="'+tb.tp+'" data-t="'+tb.t+'"><span class="tg" data-act="drwtg" data-r="'+k2+'">'+(m2?(op2?'−':'+'):'−')+'</span><span class="nm">'+esc2(tb.name)+'</span></button>';if(m2&&op2)h+='<div class="sub">'+tb.secs.map(s2=>'<button class="it" data-act="drwgo" data-r="'+r+'" data-tp="'+tb.tp+'" data-t="'+tb.t+'" data-sec="'+esc2(s2)+'"><span class="nm">• '+esc2(s2)+'</span></button>').join('')+'</div>'})}else h+=sc.secs.map(s2=>'<button class="it" data-act="drwgo" data-r="'+r+'" data-sec="'+esc2(s2)+'"><span class="nm">• '+esc2(s2)+'</span></button>').join('');h+='</div>'}
+    h+='</div>'});return h}
+function drwPaint(){const d=document.getElementById('drw');if(!d)return;d.querySelector('.ls').innerHTML=drwList()}
+function drwOpen(){const k=S.role.type+'|'+(S.role.flat||'')+'|'+(S.session&&S.session.id||'')+'|'+(S.lang||'');if(k!==DRW.key){DRW.key=k;DRW.idx={}}let d=document.getElementById('drw');if(!d){d=document.createElement('div');d.id='drw';d.innerHTML='<div class="bk" data-act="drwclose"></div><div class="pn"><div class="hd"><b>'+L('সব পাতা','All pages')+'</b><button data-act="drwclose" aria-label="Close">✕</button></div><input id="drwq" type="search" placeholder="'+L('🔍 পাতা, ট্যাব বা অংশ খুঁজুন','🔍 Search pages, tabs, sections')+'"><div class="ls"></div></div>';document.body.appendChild(d);d.querySelector('#drwq').addEventListener('input',e=>{DRW.q=e.target.value;drwPaint()})}
+  if(route&&DRW.open[route]===undefined)DRW.open[route]=true;DRW.q='';d.querySelector('#drwq').value='';d.querySelector('.ls').innerHTML='<p class="muted" style="padding:10px">…</p>';d.classList.add('on');document.body.classList.remove('barshide');requestAnimationFrame(()=>{d.classList.add('in');setTimeout(drwPaint,20)})}
+function drwClose(){const d=document.getElementById('drw');if(!d)return;d.classList.remove('in');setTimeout(()=>d.classList.remove('on'),220)}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+ if(a==='drwopen'){ev.stopImmediatePropagation();drwOpen();return}
+ if(a==='drwclose'){ev.stopImmediatePropagation();drwClose();return}
+ if(a==='drwtg'){ev.stopImmediatePropagation();const r=el.dataset.r;DRW.open[r]=!DRW.open[r];drwPaint();return}
+ if(a==='drwgo'){ev.stopImmediatePropagation();drwGo(el.dataset.r,el.dataset.tp,el.dataset.t,el.dataset.sec);return}},true);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')drwClose()});
 /* v171: chat opt-in with president approval */
 function chatGate(){const st=chatState(),k=myKey(),rq=chatReqPend(k);let b='';
  if(st==='blocked')b='<p style="margin:0">'+(S.settings.chatApp===false?L('সভাপতি এখন পুরো app-এ Chat বন্ধ রেখেছেন।','The president has turned chat off for everyone.'):L('সভাপতি আপনার জন্য Chat বন্ধ রেখেছেন।','The president has blocked chat for you.'))+'</p>';
