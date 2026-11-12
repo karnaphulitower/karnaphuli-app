@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "986988380609",
+    "project_id": "karnaphuli-tower",
+    "storage_bucket": "karnaphuli-tower.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:986988380609:android:b1096062cc1b91c41eef40",
+        "android_client_info": {
+          "package_name": "com.karnaphuli.tower"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgchb7aE7r6DVXi3l8Ndt9_tmd-39mVh8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
