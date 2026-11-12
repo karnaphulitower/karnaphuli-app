@@ -682,6 +682,38 @@ html:root header.top .hbtn,html:root header.top #menuBtn{flex:none;white-space:n
 html:root header.top #roleBtn{max-width:34vw;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:380px){html:root header.top .hbtn{padding:4px 8px;font-size:12px}}
 html:root header.top #lyBtn{background:transparent;color:var(--ink);border:1px solid var(--line);margin-left:0;flex:none;white-space:nowrap;font-weight:600}
+
+/* v179 chat: textarea composer, emoji panel, thin nav, keyboard-safe */
+.wa-box textarea#cin{flex:1;border:0;background:transparent;color:var(--wtx);padding:6px 2px;box-shadow:none;transform:none;resize:none;font:inherit;line-height:1.35;max-height:120px;min-height:22px;outline:none}
+#emjp{background:var(--wbg,var(--card));border-top:1px solid var(--line);max-height:42vh;overflow:auto;padding:6px 6px 10px}
+#emjp .et{display:flex;gap:4px;position:sticky;top:0;background:inherit;padding-bottom:4px;z-index:1}
+#emjp .et button{flex:1;border:0;background:transparent;font-size:20px;padding:4px;border-radius:8px;cursor:pointer}
+#emjp .et button.on{background:var(--soft)}
+#emjp .eg{display:grid;grid-template-columns:repeat(auto-fill,minmax(40px,1fr))}
+#emjp .eg button{border:0;background:transparent;font-size:26px;padding:4px;cursor:pointer;border-radius:8px;line-height:1.2}
+#emjp .eg button:active{background:var(--soft)}
+body.wafull nav.bottom{display:block!important}
+body.wafull nav.bottom button{padding:3px 2px 2px;flex-direction:row;justify-content:center}
+body.wafull nav.bottom button>span:not(.badge){display:none}
+body.wafull nav.bottom button .ico,body.wafull nav.bottom button svg{width:20px!important;height:20px!important}
+body.wafull nav.bottom .badge{top:0!important}
+.wafull .wa{bottom:var(--navh,34px)!important}
+body.wafull.kbopen nav.bottom{display:none!important}
+body.wafull.kbopen .wa{bottom:var(--kb,0px)!important;padding-bottom:0}
+body.wafull.barshide nav.bottom,body.wafull.barshide header.top{transform:none}
+/* ⋮ menu */
+#kbtn{background:transparent;border:0;color:var(--ink);font-size:22px;line-height:1;padding:4px 6px;margin-right:-6px;cursor:pointer;border-radius:10px;flex:none}
+#kbtn:hover{background:var(--soft)}
+html:root header.top #langBtn,html:root header.top #roleBtn,html:root header.top #lyBtn{display:none!important}
+#kmenu{position:fixed;inset:0;z-index:91;display:none}
+#kmenu.on{display:block}
+#kmenu .pp{position:absolute;right:8px;top:calc(env(safe-area-inset-top,0px) + 50px);min-width:230px;max-width:86vw;max-height:76vh;overflow:auto;background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:14px;box-shadow:0 10px 32px rgba(0,0,0,.22);padding:6px;transform-origin:top right;animation:kpop .14s ease}
+@keyframes kpop{from{transform:scale(.92);opacity:0}to{transform:none;opacity:1}}
+#kmenu .pp button{display:flex;gap:10px;align-items:center;width:100%;text-align:left;background:transparent;border:0;color:var(--ink);font:inherit;padding:9px 10px;border-radius:10px;cursor:pointer}
+#kmenu .pp button:hover{background:var(--soft)}
+#kmenu .pp .sep{height:1px;background:var(--line);margin:4px 6px}
+#kmenu .pp .gh{font-size:12px;color:var(--muted);padding:6px 10px 2px}
+body.kmok #main [data-act="rp"],body.kmok #main [data-act="rsprint"],body.kmok #main [data-act="rspdf"],body.kmok #main [data-act="rsvprint"],body.kmok #main [data-act="rsvpdf"]{display:none!important}
 </style>
 
 <div class="scenery" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 L120 70 L230 115 L360 40 L470 105 L600 55 L720 110 L850 35 L980 100 L1100 60 L1200 95 L1200 200 L0 200Z" fill="var(--hill1)" opacity=".7"/><path d="M0 150 Q150 110 300 140 T600 135 T900 140 T1200 130 L1200 200 L0 200Z" fill="var(--hill2)" opacity=".75"/><path d="M0 178 Q200 160 420 176 T820 172 T1200 170 L1200 200 L0 200Z" fill="var(--river)" opacity=".9"/></svg></div>
@@ -2040,7 +2072,7 @@ P.chat=()=>{if(chatMode==='call')return '<div class="wa"><div class="wa-top">'+c
     :'<div class="wa-hd" style="border-top:0"><button class="wa-ib" data-act="cmode" data-v="list" aria-label="'+L('ফিরে যান','Back')+'" style="width:30px">'+WI.back+'</button>'+avK(other||'',!isP)+'<span style="flex:1;min-width:0">'+title+'</span>'+calls+'</div>';
   const rq=chatReply&&msgs.find(x=>x.id===chatReply);const rbar=rq?'<div class="wa-rbar"><div class="wa-q"><b>'+esc(isMine(rq)?L('আপনি','You'):msgWho(rq))+'</b><span>'+esc(rq.x||(rq.img?'📷 '+L('ছবি','Photo'):'📎'))+'</span></div><button class="wa-ib" data-act="creplyx" style="color:var(--wmu)" aria-label="'+L('বাতিল','Cancel')+'">✕</button></div>':'';
   const blkNote=isP&&blk(myCk(),other).msg?'<div class="wa-note">🔕 '+L('আপনি এই ব্যক্তির message বন্ধ রেখেছেন। ⋮ → সেটিংস থেকে চালু করুন।','You have muted this person.')+'</div>':'';
-  return '<div class="wa"><div class="wa-top" style="position:relative">'+hd+'</div><div class="wa-body" id="msgs">'+blkNote+body+'</div><div class="wa-typing" id="typing"></div>'+rbar+'<div class="wa-in"><div class="wa-box"><button type="button" data-act="cemoji" aria-label="Emoji">😊</button><input id="cin" placeholder="'+L('মেসেজ লিখুন','Message')+'" autocomplete="off"><button type="button" data-act="cattach" aria-label="'+L('যুক্ত করুন','Attach')+'" style="transform:rotate(45deg);background:none;border:0;padding:0;color:inherit">'+WI.clip+'</button><label aria-label="'+L('ছবি','Photo')+'">📷<input type="file" accept="image/*" capture="environment" id="cimg" hidden></label></div><button class="wa-send" data-act="csend" aria-label="'+L('পাঠান','Send')+'">'+WI.send+'</button></div></div>'};
+  return '<div class="wa"><div class="wa-top" style="position:relative">'+hd+'</div><div class="wa-body" id="msgs">'+blkNote+body+'</div><div class="wa-typing" id="typing"></div>'+rbar+'<div class="wa-in"><div class="wa-box"><button type="button" data-act="cemoji" aria-label="Emoji">😊</button><textarea id="cin" rows="1" placeholder="'+L('মেসেজ লিখুন','Message')+'" autocomplete="off" autocorrect="on" enterkeyhint="send" name="ktmsg"></textarea><button type="button" data-act="cattach" aria-label="'+L('যুক্ত করুন','Attach')+'" style="transform:rotate(45deg);background:none;border:0;padding:0;color:inherit">'+WI.clip+'</button><label aria-label="'+L('ছবি','Photo')+'">📷<input type="file" accept="image/*" capture="environment" id="cimg" hidden></label></div><button class="wa-send" data-act="csend" aria-label="'+L('পাঠান','Send')+'">'+WI.send+'</button></div></div>'};
 function chatPush(o){const m=me();if(chatTab.startsWith('p:')){const ot=pOther(chatTab);if(ot&&blk(ot,myCk()).msg){toast(L('উনি আপনার message বন্ধ রেখেছেন','This person has turned off messages from you'));return}}if(chatReply){const q=(S.chats[chatTab]||[]).find(x=>x.id===chatReply);if(q)o.re={id:q.id,who:isMine(q)?L('আপনি','You'):msgWho(q),x:(q.x||(q.img?'📷 '+L('ছবি','Photo'):'📎')).slice(0,80)};chatReply=null}chatSel=null;chatMenu=false;S.chats[chatTab]=S.chats[chatTab]||[];S.chats[chatTab].push(Object.assign({id:uid(),flat:m.flat,tenant:m.tenant,staff:m.staff||null,t:Date.now()},o));save();render();
   if(window.KT_FB)return;/* real backend: no simulated replies */
   const key=chatTab;let who=null;if(key.startsWith('p:')){const ot=pOther(key);if(ot&&ot!=='dev'&&ckOnline(ot))who=ot.startsWith('s:')?{staff:ot.slice(2)}:{flat:ot.slice(2).replace(/t$/,''),tenant:ot.endsWith('t')}}else{const f=S.online.filter(o2=>o2!==m.flat)[Math.floor(Math.random()*4)]||'B2';who={flat:f}}if(!who)return;const wk=msgCk(who);{const mine2=S.chats[key][S.chats[key].length-1];setTimeout(()=>{mine2.seen=mine2.seen||{};mine2.seen[wk]=Date.now();if(!key.startsWith('p:'))S.online.filter(o2=>o2!==m.flat).slice(0,3).forEach((o2,i)=>{mine2.seen['f:'+o2]=Date.now()+i*1000});save();if(route==='chat'&&chatTab===key)keepRender()},1800)}if(blk(myCk(),wk).msg)return;
@@ -2416,7 +2448,7 @@ document.addEventListener('click',async ev=>{const g=ev.target.closest('[data-go
   if(a==='cmode'){chatMode=el.dataset.v;callQ='';render();return}
   if(a==='copen'){chatTab=el.dataset.k;chatMode='conv';render();return}
   if(a==='popen'){chatTab=pKey(el.dataset.k);chatMode='conv';S.chats[chatTab]=S.chats[chatTab]||[];render();return}
-  if(a==='cemoji'){const i=$('#cin');if(i){i.value+='😊';i.focus()}return}
+  if(a==='cemoji'){emjToggle();return}
   if(a==='gcall'){const g=el.dataset.g||chatTab;if(!canGroupCall(g)){toast(L('গ্রুপ কল দেওয়ার অনুমতি নেই','Not allowed'));return}const gg=chatGroups().find(x=>x[0]===g);const mem=g==='committee'?['সভাপতি','সেক্রেটারি','কোষাধ্যক্ষ']:S.flats.filter(f=>fname(f.no)).map(f=>f.no);callStart({n:L(gg[1],gg[2]),v:el.dataset.v,grp:g,members:mem});return}
   if(a==='pcall'){const bk=blk(el.dataset.k,myCk());if(el.dataset.v==='video'?bk.video:bk.call){toast(el.dataset.v==='video'?L('উনি আপনার ভিডিও কল বন্ধ রেখেছেন','Video calls from you are turned off'):L('উনি আপনার কল বন্ধ রেখেছেন','Calls from you are turned off'));return}const c=callContacts().find(x=>x.k===el.dataset.k&&el.dataset.k);if(c)callStart({n:c.n,ph:c.ph,v:el.dataset.v,on:ckOnline(c.k)});else{const k=el.dataset.k;if(k)callStart({n:ckName(k),ph:ckPh(k),v:el.dataset.v,on:ckOnline(k)})}return}
   if(a==='cend'){callEnd();return}
@@ -2952,15 +2984,17 @@ setTimeout(barColor,300);
 (function(){let lastY=window.scrollY,acc=0;window.addEventListener('scroll',()=>{const y=window.scrollY,d=y-lastY;lastY=y;const b=document.body;if(route==='chat'||document.querySelector('#ovl .ovl')||document.getElementById('drw')&&document.getElementById('drw').classList.contains('on')){b.classList.remove('barshide');return}if(y<60){b.classList.remove('barshide');acc=0;return}if((d>0&&acc<0)||(d<0&&acc>0))acc=0;acc+=d;if(acc>40)b.classList.add('barshide');else if(acc<-30)b.classList.remove('barshide')},{passive:true})})();
 {const _r=render;render=function(){_r.apply(this,arguments);if(!document.getElementById('menuBtn')){const t=document.querySelector('.top-in');if(t){const m=document.createElement('button');m.id='menuBtn';m.setAttribute('data-act','drwopen');m.textContent='☰';t.insertBefore(m,t.firstChild)}}}}
 const DRW={idx:{},open:{},q:'',key:''};
-function drwPages(){const out=[];const seen={};document.querySelectorAll('#nav [data-go]').forEach(b=>{const r=b.dataset.go;if(r&&r!=='more'&&!seen[r]){seen[r]=1;out.push([r,b.textContent.trim()])}});try{const d=document.createElement('div');d.innerHTML=P.more();d.querySelectorAll('[data-go]').forEach(b=>{const r=b.dataset.go;if(r&&!seen[r]&&r!=='logout'){seen[r]=1;out.push([r,b.textContent.trim()])}})}catch(e){}if(!seen.home)out.unshift(['home',L('হোম','Home')]);return out}
-function drwScan(r){const k=DRW.key+'|'+r;if(DRW.idx[k])return DRW.idx[k];let res={tabs:[],secs:[]};if(['chat','login','logout'].includes(r)||!P[r]){DRW.idx[k]=res;return res}
+function drwPages(){const out=drwPages0();try{const lg=S.lang;S.lang=lg==='en'?'bn':'en';const d=document.createElement('div');d.innerHTML=P.more();const mp={};d.querySelectorAll('[data-go]').forEach(b=>mp[b.dataset.go]=b.textContent.trim());S.lang=lg;const NV={home:['হোম','Home'],mine:['আমার হিসাব','My account'],issues:['সমস্যা','Issues'],tasks:['কাজ ও দায়িত্ব','Tasks & duties'],chat:['Chat','Chat'],duty:['ডিউটি','Duty']};out.forEach(x=>{x[2]=mp[x[0]]||(NV[x[0]]?(lg==='en'?NV[x[0]][0]:NV[x[0]][1]):'')})}catch(e){}return out}
+function drwPages0(){const out=[];const seen={};document.querySelectorAll('#nav [data-go]').forEach(b=>{const r=b.dataset.go;if(r&&r!=='more'&&!seen[r]){seen[r]=1;out.push([r,b.textContent.trim()])}});try{const d=document.createElement('div');d.innerHTML=P.more();d.querySelectorAll('[data-go]').forEach(b=>{const r=b.dataset.go;if(r&&!seen[r]&&r!=='logout'){seen[r]=1;out.push([r,b.textContent.trim()])}})}catch(e){}if(!seen.home)out.unshift(['home',L('হোম','Home')]);return out}
+function drwScan(r){if(!drwScan.alt){drwScan.alt=1;try{const lg=S.lang;S.lang=lg==='en'?'bn':'en';const o=drwScan0(r,true);S.lang=lg;const m=drwScan0(r);m.alt=o;return m}finally{drwScan.alt=0}}return drwScan0(r)}
+function drwScan0(r,isAlt){const k=DRW.key+'|'+r+(isAlt?'|alt':'');if(DRW.idx[k])return DRW.idx[k];let res={tabs:[],secs:[]};if(['chat','login','logout'].includes(r)||!P[r]){DRW.idx[k]=res;return res}
   const sv={route,param,tm:JSON.stringify(TABMEM)},oldSave=window.save;try{window.save=function(){};route=r;param=null;const d=document.createElement('div');d.innerHTML=P[r]()||'';
    const hs=el=>[...el.querySelectorAll('.card h3, .card>h4')].map(h=>h.textContent.replace(/\s+/g,' ').trim()).filter(x=>x&&x.length<70).filter((x,i,a)=>a.indexOf(x)===i).slice(0,30);
    const bar=d.querySelector('.ptabs');if(bar){const tp=bar.dataset.tp;bar.querySelectorAll('[data-act="ptab"]').forEach(b=>{const t=b.dataset.t;const pn=d.querySelector('.tpane[data-tp="'+tp+'"][data-t="'+t+'"]');res.tabs.push({tp,t,name:b.textContent.replace(/\s+/g,' ').trim(),secs:pn?hs(pn):[]})})}else res.secs=hs(d)}catch(e){}finally{window.save=oldSave;route=sv.route;param=sv.param;try{TABMEM=JSON.parse(sv.tm)}catch(e){}}
   DRW.idx[k]=res;return res}
 function drwGo(r,tp,t,sec){drwClose();if(tp){TABMEM[tp]=t}if(route===r)render();else go(r);if(sec)setTimeout(()=>{const h=[...document.querySelectorAll('#main .card h3, #main .card>h4')].find(x=>x.textContent.replace(/\s+/g,' ').trim()===sec&&x.offsetParent);if(h){const c=h.closest('.card')||h;const top=c.getBoundingClientRect().top+window.scrollY-80;window.scrollTo({top,behavior:'smooth'});c.classList.add('drwhl');setTimeout(()=>c.classList.remove('drwhl'),1600)}},260)}
 function drwList(){const q=DRW.q.trim().toLowerCase();const pages=drwPages();const esc2=x=>esc(x);let h='';
-  if(q){const hits=[];pages.forEach(([r,nm])=>{const sc=drwScan(r);const m=x=>x.toLowerCase().includes(q);if(m(nm))hits.push(['p',r,nm,'']);sc.tabs.forEach(tb=>{if(m(tb.name))hits.push(['t',r,tb.name,nm,tb]);tb.secs.forEach(s2=>{if(m(s2))hits.push(['s',r,s2,nm+' › '+tb.name,tb])})});sc.secs.forEach(s2=>{if(m(s2))hits.push(['s',r,s2,nm])})});
+  if(q){const hits=[];pages.forEach(([r,nm,alt])=>{const sc=drwScan(r);const A=sc.alt||{tabs:[],secs:[]};const m=(x,y)=>(x||'').toLowerCase().includes(q)||(y||'').toLowerCase().includes(q);if(m(nm,alt))hits.push(['p',r,nm,'']);sc.tabs.forEach((tb,ti)=>{const at=A.tabs[ti]||{secs:[]};if(m(tb.name,at.name))hits.push(['t',r,tb.name,nm,tb]);tb.secs.forEach((s2,si)=>{if(m(s2,at.secs[si]))hits.push(['s',r,s2,nm+' › '+tb.name,tb])})});sc.secs.forEach((s2,si)=>{if(m(s2,A.secs[si]))hits.push(['s',r,s2,nm])})});
     if(!hits.length)return '<p class="muted" style="padding:10px">'+L('কিছু পাওয়া যায়নি','Nothing found')+'</p>';
     return hits.slice(0,60).map(x=>{const tb=x[4];return '<button class="it" data-act="drwgo" data-r="'+x[1]+'"'+(tb?' data-tp="'+tb.tp+'" data-t="'+tb.t+'"':'')+(x[0]==='s'?' data-sec="'+esc2(x[2])+'"':'')+'><span class="tg">'+(x[0]==='p'?'▤':x[0]==='t'?'▭':'•')+'</span><span class="nm">'+esc2(x[2])+(x[3]?'<span class="path">'+esc2(x[3])+'</span>':'')+'</span></button>'}).join('')}
   pages.forEach(([r,nm])=>{const sc=drwScan(r);const multi=sc.tabs.length>1||sc.secs.length>1||(sc.tabs.length===1&&sc.tabs[0].secs.length>1);const op=DRW.open[r];
@@ -2977,6 +3011,49 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');
  if(a==='drwtg'){ev.stopImmediatePropagation();const r=el.dataset.r;DRW.open[r]=!DRW.open[r];drwPaint();return}
  if(a==='drwgo'){ev.stopImmediatePropagation();drwGo(el.dataset.r,el.dataset.tp,el.dataset.t,el.dataset.sec);return}},true);
 document.addEventListener('keydown',e=>{if(e.key==='Escape')drwClose()});
+
+/* v179: emoji picker */
+const EMJ=[['😊','😀 😃 😄 😁 😆 😅 😂 🤣 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😗 😋 😛 😜 🤪 😎 🤩 🥳 😏 😒 😞 😔 😟 😕 🙁 😣 😖 😫 😩 🥺 😢 😭 😤 😠 😡 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🤭 🤫 😶 😐 😑 😬 🙄 😯 😦 😧 😮 😲 🥱 😴 🤤 😪 😵 🤐 🥴 🤢 🤮 🤧 😷 🤒 🤕'],['👍','👍 👎 👌 ✌ 🤞 🤟 🤘 🤙 👈 👉 👆 👇 ☝ ✋ 🤚 🖐 🖖 👋 🤝 🙏 👏 🙌 👐 🤲 💪 ✍ 🤳 💅 👀 🧠 🫶'],['❤','❤ 🧡 💛 💚 💙 💜 🖤 🤍 🤎 💔 ❣ 💕 💞 💓 💗 💖 💘 💝 ✨ 🎉 🎊 🎁 🎂 🌹 🌸 🌺 🌻 🌼 ⭐ 🌟 🔥 💯'],['🏠','🏠 🏢 🏬 🏗 🚗 🏍 🚲 🛵 🚌 🚕 🚑 🚒 🚓 ⚡ 💡 🔌 🔋 🚰 💧 🔧 🔨 🧹 🧺 🗑 🚪 🛗 🔑 🔒 🔔 📢 📞 📱 💻 📷 📄 📝 📅 ⏰ 💰 💵 🧾 ✅ ❌ ⚠ ❓ ❗ 🆗 🙋 👷 👮 🧑‍🔧'],['🍚','🍚 🍛 🍜 🍲 🍞 🥚 🍗 🐟 🍎 🍌 🥭 🍉 🍊 🍇 🍵 ☕ 🥤 🍰 🍬 🌙 ☀ 🌧 ⛅ 🌈 🕌 🛕 ⛪']];
+let emjTab=0;
+function emjHtml(){return '<div id="emjp"><div class="et">'+EMJ.map((c,i)=>'<button type="button" data-act="emjt" data-i="'+i+'" class="'+(i===emjTab?'on':'')+'">'+c[0]+'</button>').join('')+'</div><div class="eg">'+EMJ[emjTab][1].split(' ').map(e=>'<button type="button" data-act="emji" data-e="'+e+'">'+e+'</button>').join('')+'</div></div>'}
+function emjToggle(force){const ex=document.getElementById('emjp');if(ex&&force!==true){ex.remove();const i=$('#cin');if(i)i.focus();return}if(ex)ex.remove();const box=document.querySelector('.wa-in');if(!box)return;box.insertAdjacentHTML('afterend',emjHtml());const i=$('#cin');if(i)i.blur();setTimeout(()=>{const m=$('#msgs');if(m)m.scrollTop=m.scrollHeight},30)}
+function emjIns(e){const i=$('#cin');if(!i)return;const a=i.selectionStart==null?i.value.length:i.selectionStart,b=i.selectionEnd==null?a:i.selectionEnd;i.value=i.value.slice(0,a)+e+i.value.slice(b);const p=a+e.length;try{i.setSelectionRange(p,p)}catch(x){}cinGrow()}
+function cinGrow(){const i=$('#cin');if(!i||i.tagName!=='TEXTAREA')return;i.style.height='auto';i.style.height=Math.min(i.scrollHeight,120)+'px'}
+document.addEventListener('input',e=>{if(e.target&&e.target.id==='cin')cinGrow()});
+document.addEventListener('focusin',e=>{if(e.target&&e.target.id==='cin'){const p=document.getElementById('emjp');if(p)p.remove()}});
+/* keyboard: keep composer above it */
+try{const meta=document.querySelector('meta[name=viewport]');if(meta&&!/interactive-widget/.test(meta.content))meta.content+=', interactive-widget=resizes-content'}catch(e){}
+(function(){const vv=window.visualViewport;const upd=()=>{const ae=document.activeElement;const typing=ae&&/^(INPUT|TEXTAREA)$/.test(ae.tagName);let kb=0;if(vv)kb=Math.max(0,window.innerHeight-vv.height-vv.offsetTop);document.documentElement.style.setProperty('--kb',Math.round(kb)+'px');document.body.classList.toggle('kbopen',!!typing&&(kb>60||window.innerHeight<screen.height*0.6))};if(vv){vv.addEventListener('resize',upd);vv.addEventListener('scroll',upd)}document.addEventListener('focusin',()=>setTimeout(upd,250));document.addEventListener('focusout',()=>setTimeout(upd,120))})();
+function navHset(){const n=document.querySelector('nav.bottom');if(n&&document.body.classList.contains('wafull'))document.documentElement.style.setProperty('--navh',Math.round(n.getBoundingClientRect().height)+'px')}
+/* ⋮ menu */
+function kmItems(){const it=[];const add=(ic,t,fn,g)=>it.push({ic,t,fn,g});
+  const rp=[...document.querySelectorAll('#main [data-act="rp"],#main [data-act="rsprint"],#main [data-act="rspdf"],#main [data-act="rsvprint"],#main [data-act="rsvpdf"]')].filter(b=>b.offsetParent!==null||document.body.classList.contains('kmok'));
+  if(rp.length)rp.forEach(b=>add('',b.textContent.trim(),()=>b.click(),'page'));
+  else{add('🖨',L('এই পাতা Print / PDF','Print / PDF this page'),kmPrint,'page');add('📤',L('এই পাতা শেয়ার','Share this page'),kmShare,'page')}
+  const rb=document.getElementById('roleBtn');if(rb&&rb.offsetParent!==undefined&&rb.textContent.trim()&&!document.body.classList.contains('gated'))add('🎭',L('ভূমিকা: ','Role: ')+rb.textContent.replace('▾','').trim(),()=>rb.click(),'app');
+  const lb=document.getElementById('langBtn');if(lb)add('🌐',S.lang==='en'?'বাংলায় দেখুন':'Switch to English',()=>lb.click(),'app');
+  add(isDark()?'☀':'🌙',isDark()?L('Light mode','Light mode'):L('Dark mode','Dark mode'),()=>{const q=pref();q.mode=isDark()?'light':'dark';prefSave(q);applyTheme(themeKey());render()},'app');
+  const ly=document.getElementById('lyBtn');if(ly)add('✏️',L('Layout সাজান (Edit)','Arrange layout (Edit)'),()=>ly.click(),'app');
+  add('🔄',L('তথ্য আবার আনুন','Refresh data'),()=>location.reload(),'app');
+  add('❓',L('এই পাতার সাহায্য','Help for this page'),kmHelp,'app');
+  add('⚠',L('সমস্যা জানান','Report a problem'),()=>go('issues'),'app');
+  if(S.session)add('🚪','Logout',()=>{if(window.fbOut&&window.KT_FB){go('logout')}else go('logout')},'app');
+  return it}
+function kmOpen(){let d=document.getElementById('kmenu');if(!d){d=document.createElement('div');d.id='kmenu';d.innerHTML='<div class="pp"></div>';d.addEventListener('click',e=>{if(e.target===d)kmClose()});document.body.appendChild(d)}const it=kmItems();KM=it;let h='',g='';it.forEach((x,i)=>{if(x.g!==g){if(g)h+='<div class="sep"></div>';h+='<div class="gh">'+(x.g==='page'?L('এই পাতা','This page'):L('App','App'))+'</div>';g=x.g}h+='<button data-act="kmgo" data-i="'+i+'">'+(x.ic?'<span>'+x.ic+'</span>':'')+'<span>'+esc(x.t)+'</span></button>'});d.querySelector('.pp').innerHTML=h;d.classList.add('on');document.body.classList.remove('barshide')}
+let KM=[];function kmClose(){const d=document.getElementById('kmenu');if(d)d.classList.remove('on')}
+function kmPrint(){const z=document.getElementById('printzone')||(()=>{const x=document.createElement('div');x.id='printzone';x.style.display='none';document.body.appendChild(x);return x})();const t=(document.querySelector('#main .pt')||{}).textContent||'';z.innerHTML='<h2>'+esc(L('কর্ণফুলী টাওয়ার','Karnaphuli Tower'))+(t?' · '+esc(t):'')+'</h2>'+document.getElementById('main').innerHTML;z.querySelectorAll('button,.backbar,.frzbar').forEach(b=>b.remove());document.body.classList.add('pz');const done=()=>{document.body.classList.remove('pz');window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);setTimeout(()=>{try{window.print()}catch(e){}setTimeout(done,1500)},60)}
+async function kmShare(){const t=((document.querySelector('#main .pt')||{}).textContent||'').trim();const txt=L('কর্ণফুলী টাওয়ার','Karnaphuli Tower')+(t?' · '+t:'')+'\n'+location.href;try{if(navigator.share){await navigator.share({title:t||document.title,text:txt,url:location.href});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(txt);toast(L('Link copy হয়েছে','Link copied'))}catch(e){toast(txt)}}
+function kmHelp(){let sc={tabs:[],secs:[]};try{sc=drwScan(route)}catch(e){}const t=((document.querySelector('#main .pt')||{}).textContent||'').trim()||route;const parts=sc.tabs.length?sc.tabs.map(x=>'<li><b>'+esc(x.name)+'</b>'+(x.secs.length?': '+esc(x.secs.slice(0,6).join(', ')):'')+'</li>').join(''):sc.secs.map(x=>'<li>'+esc(x)+'</li>').join('');openM('<h3>❓ '+esc(t)+'</h3><p class="muted" style="margin:0 0 6px">'+L('এই পাতায় যা যা আছে:','What is on this page:')+'</p><ul style="margin:0 0 8px;padding-left:18px">'+(parts||'<li>'+L('একটি অংশ','One section')+'</li>')+'</ul><p class="muted" style="margin:0">'+L('বাঁ দিকের ☰ মেনু থেকে যেকোনো অংশ খুঁজে সরাসরি যেতে পারেন। কিছু বুঝতে না পারলে ⋮ → "সমস্যা জানান"।','Use ☰ to jump to any part. Stuck? ⋮ → Report a problem.')+'</p><div class="row"><button class="btn sec" data-act="close">'+L('বন্ধ','Close')+'</button></div>')}
+document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');if(!el)return;const a=el.dataset.act;
+ if(a==='kmopen'){ev.stopImmediatePropagation();kmOpen();return}
+ if(a==='kmgo'){ev.stopImmediatePropagation();const x=KM[+el.dataset.i];kmClose();if(x)setTimeout(()=>x.fn(),10);return}
+ if(a==='emjt'){ev.stopImmediatePropagation();emjTab=+el.dataset.i;emjToggle(true);return}
+ if(a==='emji'){ev.stopImmediatePropagation();ev.preventDefault();emjIns(el.dataset.e);return}},true);
+/* zoom back to 100% on page change / login / logout */
+function zoomReset(){try{const vv=window.visualViewport;if(vv&&Math.abs(vv.scale-1)<0.01)return;const m=document.querySelector('meta[name=viewport]');if(!m)return;const orig=m.content;m.content=orig.replace(/,?\s*maximum-scale=[^,]*/,'')+', maximum-scale=1';setTimeout(()=>{m.content=orig},350)}catch(e){}}
+{let lastR=null,lastS=null;const _r=render;render=function(){_r.apply(this,arguments);try{const sk=S.session?S.session.k+(S.session.id||''):'';if(route!==lastR||sk!==lastS){if(lastR!==null)zoomReset();lastR=route;lastS=sk}
+  const t=document.querySelector('.top-in');if(t&&!document.getElementById('kbtn')){const b=document.createElement('button');b.id='kbtn';b.setAttribute('data-act','kmopen');b.setAttribute('aria-label','More');b.textContent='⋮';t.appendChild(b)}
+  document.body.classList.add('kmok');navHset();if(typeof barColor==='function')barColor()}catch(e){}}}
 /* v171: chat opt-in with president approval */
 function chatGate(){const st=chatState(),k=myKey(),rq=chatReqPend(k);let b='';
  if(st==='blocked')b='<p style="margin:0">'+(S.settings.chatApp===false?L('সভাপতি এখন পুরো app-এ Chat বন্ধ রেখেছেন।','The president has turned chat off for everyone.'):L('সভাপতি আপনার জন্য Chat বন্ধ রেখেছেন।','The president has blocked chat for you.'))+'</p>';
@@ -3059,7 +3136,7 @@ function msnLay(){const wide=innerWidth>=1100;document.querySelectorAll('#main .
 let msnRO=null,msnRaf=0;try{msnRO=new ResizeObserver(()=>{cancelAnimationFrame(msnRaf);msnRaf=requestAnimationFrame(msnHeights)})}catch(e){}
 function msnHeights(){const z=parseFloat(getComputedStyle(document.getElementById('main')).zoom)||1;document.querySelectorAll('#main .tpane.msn').forEach(tp=>[...tp.children].forEach(c=>{const h=c.getBoundingClientRect().height/z;const v='span '+Math.max(1,Math.ceil((h+14)/4));if(c.style.gridRowEnd!==v)c.style.gridRowEnd=v}))}
 window.addEventListener('resize',()=>{clearTimeout(msnLay.t);msnLay.t=setTimeout(msnLay,150)});
-function frzP(){const f=pref().frz||{};return {h:f.h!==false,c:f.c==null?1:f.c,z:f.z||100,ht:f.ht!==false}}
+function frzP(){const f=pref().frz||{};return {h:f.h!==false,c:f.c==null?2:f.c,z:f.z||100,ht:f.ht!==false}}
 function frzSet(k,v){const q=pref();q.frz=Object.assign({},frzP(),{[k]:v});prefSave(q);frzApply()}
 function frzBar(){const f=frzP();return '<div class="frzbar"><span>❄ Freeze:</span><button class="tab'+(f.h?' on':'')+'" data-act="frz" data-k="h">'+L('উপরের সারি','Top row')+'</button><button class="tab'+(f.c===0?' on':'')+'" data-act="frz" data-k="c" data-v="0">'+L('কলাম নেই','No column')+'</button><button class="tab'+(f.c===1?' on':'')+'" data-act="frz" data-k="c" data-v="1">'+L('১ কলাম','1 col')+'</button><button class="tab'+(f.c===2?' on':'')+'" data-act="frz" data-k="c" data-v="2">'+L('২ কলাম','2 cols')+'</button><span style="margin-left:auto">🔍</span><button class="tab" data-act="frz" data-k="z" data-v="-10">−</button><b class="frzz">'+digits(f.z)+'%</b><button class="tab" data-act="frz" data-k="z" data-v="10">+</button></div>'}
 function frzApply(){const f=frzP();document.querySelectorAll('.tbl.frz').forEach(t=>{t.classList.toggle('fh',f.h);t.classList.toggle('fc1',f.c===1);t.classList.toggle('fc2',f.c===2);t.style.setProperty('--sz',f.z/100);t.style.setProperty('--frzh',f.ht?(t.closest('.ovl')?'62vh':'calc(100vh - 230px)'):'none');const r=t.querySelector('tr');let x=0;if(r)[...r.children].forEach((c,i)=>{const L2=x;t.querySelectorAll('tr').forEach(tr=>{const cell=tr.children[i];if(cell)cell.style.left=(i<f.c)?L2+'px':''});x+=c.offsetWidth})});document.querySelectorAll('.frzbar').forEach(b=>{b.querySelectorAll('[data-k="c"]').forEach(x=>x.classList.toggle('on',Number(x.dataset.v)===f.c));const h=b.querySelector('[data-k="h"]');if(h)h.classList.toggle('on',f.h);const z=b.querySelector('.frzz');if(z)z.textContent=digits(f.z)+'%'})}
