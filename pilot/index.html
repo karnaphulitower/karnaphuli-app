@@ -629,6 +629,12 @@ body.lyedit #lyBtn{display:none}
 body.lyedit #main .card[data-lyi],body.lyedit #main .morebox>[data-lyi],body.lyedit #nav [data-lyi],body.lyedit #main .ptabs[data-lyi]{outline:1.5px dashed color-mix(in srgb,var(--leaf) 60%,transparent);outline-offset:2px}body.lyedit #main [data-lyi]{cursor:move}body.lyedit #main [data-lyi]:hover{outline:1.5px dashed #f59e0b;outline-offset:2px}
 body.lyedit .lysel{outline:3px solid #f59e0b!important;outline-offset:3px;box-shadow:0 0 0 6px rgba(245,158,11,.18)!important}
 body.lyedit nav.bottom{pointer-events:auto}
+
+/* v176: neutral dark mode (black/grey, theme colour only as accent) */
+html:root[data-theme="dark"]{--sky:#121212!important;--mint:#0c0c0c!important;--card:#1c1c1e;--soft:#232326!important;--line:#333338;--hill1:#1e1e20!important;--hill2:#262628!important;--river:#202024!important;--greybg:#26262a}
+html:root[data-theme="dark"] body{background:#0c0c0c;background-color:#0c0c0c}
+html:root[data-theme="dark"] header.top,html:root[data-theme="dark"] body::before{background:#161618!important}
+html:root[data-theme="dark"] body.glass header.top{background:color-mix(in srgb,#161618 80%,transparent)!important}
 </style>
 
 <div class="scenery" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 L120 70 L230 115 L360 40 L470 105 L600 55 L720 110 L850 35 L980 100 L1100 60 L1200 95 L1200 200 L0 200Z" fill="var(--hill1)" opacity=".7"/><path d="M0 150 Q150 110 300 140 T600 135 T900 140 T1200 130 L1200 200 L0 200Z" fill="var(--hill2)" opacity=".75"/><path d="M0 178 Q200 160 420 176 T820 172 T1200 170 L1200 200 L0 200Z" fill="var(--river)" opacity=".9"/></svg></div>
@@ -2886,6 +2892,12 @@ document.addEventListener('click',ev=>{const el=ev.target.closest('[data-act]');
  if(a==='sosreq'){ev.stopImmediatePropagation();const k=myKey();S.sosReq=S.sosReq||[];if(S.sosReq.some(r=>r.k===k&&r.status==='pend'))return;S.sosReq.unshift({id:uid(),k,who:meLabel(),t:Date.now(),status:'pend'});save();toast(L('আবেদন পাঠানো হলো','Request sent'));render();return}
  if(a==='task'&&String(el.dataset.a||'').startsWith('sq:')){ev.stopImmediatePropagation();const r=(S.sosReq||[]).find(x=>x.id===el.dataset.a.slice(3));if(!r)return;openM('<h3>🚨 '+L('SOS আবার চালুর আবেদন','SOS turn-on request')+'</h3><p style="margin:0"><b>'+esc(r.who)+'</b> · '+tL(r.t)+'</p><div class="row"><button class="btn" data-act="sqok" data-id="'+r.id+'">✓ '+L('অনুমোদন','Approve')+'</button><button class="btn sec" data-act="sqno" data-id="'+r.id+'">✖ '+L('নামঞ্জুর','Reject')+'</button></div>');return}
  if(a==='sqok'||a==='sqno'){ev.stopImmediatePropagation();if(!ctlBoss())return;const r=(S.sosReq||[]).find(x=>x.id===el.dataset.id);if(!r||r.status!=='pend')return;r.status=a==='sqok'?'ok':'rej';r.byPres=meLabel();r.dt=Date.now();if(a==='sqok')delete (S.settings.sosOut||{})[r.k];logA('SOS on '+(a==='sqok'?'approved':'rejected')+': '+r.who);save();closeM();toast(a==='sqok'?L('অনুমোদন দেওয়া হলো','Approved'):L('নামঞ্জুর হলো','Rejected'));render();return}},true);
+
+/* v176: phone status bar follows theme header colour */
+function barColor(){try{const h=document.querySelector('header.top');let c=h?getComputedStyle(h).backgroundColor:'';if(!c||c==='rgba(0, 0, 0, 0)')c=isDark()?'#161618':'#1d3a2a';let m=document.querySelector('meta[name="theme-color"]');if(!m){m=document.createElement('meta');m.name='theme-color';document.head.appendChild(m)}if(m.content!==c)m.content=c}catch(e){}}
+{const _at=applyTheme;applyTheme=function(k){_at(k);setTimeout(barColor,30)}}
+try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',()=>setTimeout(barColor,60))}catch(e){}
+setTimeout(barColor,300);
 /* v171: chat opt-in with president approval */
 function chatGate(){const st=chatState(),k=myKey(),rq=chatReqPend(k);let b='';
  if(st==='blocked')b='<p style="margin:0">'+(S.settings.chatApp===false?L('সভাপতি এখন পুরো app-এ Chat বন্ধ রেখেছেন।','The president has turned chat off for everyone.'):L('সভাপতি আপনার জন্য Chat বন্ধ রেখেছেন।','The president has blocked chat for you.'))+'</p>';
