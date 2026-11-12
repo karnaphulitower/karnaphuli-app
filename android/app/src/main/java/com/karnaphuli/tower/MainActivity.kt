@@ -127,6 +127,7 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface fun openNotifSettings() {
             try { startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)) } catch (_: Exception) {}
         }
+        @JavascriptInterface fun batteryOk(): Boolean = try { (getSystemService(POWER_SERVICE) as android.os.PowerManager).isIgnoringBatteryOptimizations(packageName) } catch (_: Exception) { true }
         @JavascriptInterface fun askBattery() {
             try { startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))) } catch (_: Exception) {}
         }
