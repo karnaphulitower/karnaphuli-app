@@ -733,13 +733,21 @@ body.chthm .wa-top{background:var(--wh)!important;box-shadow:0 1px 0 rgba(0,0,0,
 #printzone .card{background:#fff!important;box-shadow:none!important;border:1px solid #e3e3e3!important}
 #printzone *{text-shadow:none!important;backdrop-filter:none!important}
 
-/* v194 classic report colours: lighter section headers, white text; light leaf title */
-.rpc-color table[data-pc="0"]{--pcg:#3fb27a}.rpc-color table[data-pc="1"]{--pcg:#4e9bd6}.rpc-color table[data-pc="2"]{--pcg:#e89a2e}
-.rpc-color table[data-pc="3"]{--pcg:#e2648f}.rpc-color table[data-pc="4"]{--pcg:#9478e0}.rpc-color table[data-pc="5"]{--pcg:#36aeb4}
-.rpc-color th{background:var(--pcg,#3fb27a)!important;color:#fff!important;font-weight:700!important}
-.rpc-color tr.total td,.rpc-color tr.total th{background:#fff4c2!important;font-weight:700!important}
-.rpc-color .phead,.rpc-color .hhd,#printzone.rpc-color > h2{background:color-mix(in srgb,var(--leaf) 20%,#fff)!important;color:var(--forest)!important;border:1px solid color-mix(in srgb,var(--leaf) 40%,#fff)!important;box-shadow:none!important;text-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
-.rpc-color .phead *,.rpc-color .hhd *{color:var(--forest)!important}
+/* v195 report colours: original dark section headers, green title, padded sections, crisp text */
+.rpc-color th{background:var(--pcg,linear-gradient(180deg,#2bb070,#1b8a52))!important;color:#fff!important;font-weight:700!important}
+.rpc-color tr.total td,.rpc-color tr.total th{background:#fff1a8!important;color:#000!important;font-weight:700!important}
+.rpc-color .phead,.rpc-color .hhd,#printzone.rpc-color > h2{background:linear-gradient(180deg,#2bb070,#1b8a52)!important;color:#fff!important;border:0!important;box-shadow:none!important;text-shadow:none!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+.rpc-color .phead *,.rpc-color .hhd *{color:#fff!important;opacity:1!important}
+#printzone{padding:2mm}#printzone .card,#printzone .hcard{padding:8px 10px!important;margin:0 0 12px!important;border-radius:8px;overflow:visible!important}
+#printzone .hcard>.hhd{margin:-8px -10px 8px!important;border-radius:8px 8px 0 0}
+#printzone .tbl,#printzone table{margin:6px 0 8px!important}#printzone .phead{margin-bottom:10px!important}#printzone .grid2{margin:6px 0!important}
+#printzone,#printzone *{-webkit-font-smoothing:antialiased;text-shadow:none!important;filter:none}
+#printzone td,#printzone p,#printzone li,#printzone .muted,#printzone .psub,#printzone .paddr,#printzone small,#printzone label,#printzone span{opacity:1!important}
+#printzone td,#printzone p,#printzone li,#printzone .muted,#printzone .psub,#printzone small{color:#000!important;font-weight:500}
+#printzone .rpc-color .phead *,#printzone.rpc-color .phead *{color:#fff!important}
+#printzone.rpc-color .hcard>.hhd,#printzone .rpc-color .hcard>.hhd{background:var(--hg,linear-gradient(180deg,#2bb070,#1b8a52))!important;color:#fff!important;border:0!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printzone.rpc-color .hhd *,#printzone .rpc-color .hhd *{color:#fff!important}#printzone .hhd .pill,#printzone .hhd .pill *{background:#fff!important;color:#000!important;border:1px solid #fff}
+#printzone .stat{box-shadow:none!important;border:1px solid #cfd8d3!important}#printzone .stat>*:first-child{color:#000!important;opacity:1!important;font-weight:500}
 .rpc-bw .phead,.rpc-bw .hhd,#printzone.rpc-bw > h2{background:#fff!important;color:#000!important;border:1.5px solid #000!important;box-shadow:none!important}
 .rpc-bw .phead *,.rpc-bw .hhd *{color:#000!important;opacity:1!important}
 .rpc-bw th{background:#fff!important;font-weight:700!important;border-color:#000!important}.rpc-bw td{border-color:#555!important}
@@ -3091,7 +3099,7 @@ function kmItems(){const it=[];const add=(ic,t,fn,g)=>it.push({ic,t,fn,g});
   if(S.session)add('🚪','Logout',()=>{if(window.fbOut&&window.KT_FB){go('logout')}else go('logout')},'app');
   return it}
 function kmOpen(){let d=document.getElementById('kmenu');if(!d){d=document.createElement('div');d.id='kmenu';d.innerHTML='<div class="pp"></div>';d.addEventListener('click',e=>{if(e.target===d)kmClose()});document.body.appendChild(d)}const it=kmItems();KM=it;let h='',g='';it.forEach((x,i)=>{if(x.g!==g){if(g)h+='<div class="sep"></div>';h+='<div class="gh">'+(x.g==='page'?L('এই পাতা','This page'):L('App','App'))+'</div>';g=x.g}h+='<button data-act="kmgo" data-i="'+i+'">'+(x.ic?'<span>'+x.ic+'</span>':'')+'<span>'+esc(x.t)+'</span></button>'});d.querySelector('.pp').innerHTML=h+'<div class="gh" style="text-align:center;opacity:.6">'+APPV+'</div>';d.classList.add('on');document.body.classList.remove('barshide')}
-const APPV='v194';let KM=[];function kmClose(){const d=document.getElementById('kmenu');if(d)d.classList.remove('on')}
+const APPV='v195';let KM=[];function kmClose(){const d=document.getElementById('kmenu');if(d)d.classList.remove('on')}
 function kmPrint(){openM('<h3>🖨 '+L('প্রিন্ট / PDF','Print / PDF')+'</h3><p class="muted" style="margin:0">'+L('কীভাবে প্রিন্ট করবেন?','How to print?')+'</p><label class="f">'+L('রঙের ধরন','Colour style')+rpPalSel()+'</label><div class="row"><button class="btn" data-act="kmpr" data-v="c">🎨 '+L('রঙিন','Colour')+'</button><button class="btn sec" data-act="kmpr" data-v="bw">⚫⚪ '+L('সাদা-কালো','Black & white')+'</button></div><div class="row"><button class="btn sec" data-act="close">'+L('বাতিল','Cancel')+'</button></div>')}
 function kmPrintGo(bw){const z=document.getElementById('printzone')||(()=>{const x=document.createElement('div');x.id='printzone';x.style.display='none';document.body.appendChild(x);return x})();const t=(document.querySelector('#main .pt')||{}).textContent||'';z.innerHTML='<h2>'+esc(L('কর্ণফুলী টাওয়ার','Karnaphuli Tower'))+(t?' · '+esc(t):'')+'</h2>'+document.getElementById('main').innerHTML;z.querySelectorAll('button,.backbar,.frzbar,select,input,textarea,.ptrow>h2.pt,h2.pt,.rpbar,.rptool').forEach(b=>b.remove());{const q=pref();window._rpOld=q.rpCol;q.rpCol=bw?'bw':'color';prefSave(q)}rpColorize(z);{const q=pref();q.rpCol=window._rpOld;prefSave(q)}document.body.classList.add('pz');document.body.classList.toggle('pzbw',!!bw);const done=()=>{document.body.classList.remove('pz','pzbw');window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);setTimeout(()=>{try{doPrint()}catch(e){}setTimeout(done,1500)},60)}
 async function kmShare(){const t=((document.querySelector('#main .pt')||{}).textContent||'').trim();const txt=L('কর্ণফুলী টাওয়ার','Karnaphuli Tower')+(t?' · '+t:'')+'\n'+location.href;try{if(navigator.share){await navigator.share({title:t||document.title,text:txt,url:location.href});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(txt);toast(L('Link copy হয়েছে','Link copied'))}catch(e){toast(txt)}}
