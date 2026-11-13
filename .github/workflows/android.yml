@@ -26,16 +26,25 @@ jobs:
           KT_VNAME: 2.0.${{ github.run_number }}
           KT_KS_PASS: ${{ secrets.KS_PASS }}
         run: gradle --no-daemon assembleRelease
-      - name: Rename
-        run: cp android/app/build/outputs/apk/release/app-release.apk karnaphuli.apk
+      - name: Rename (version + Dhaka date/time in file name)
+        env: { GH_TOKEN: '${{ github.token }}' }
+        run: |
+          STAMP=$(TZ=Asia/Dhaka date +%Y-%m-%d_%H-%M)
+          NAME="KarnafullyTower-v2.0.${{ github.run_number }}-${STAMP}.apk"
+          cp android/app/build/outputs/apk/release/app-release.apk karnaphuli.apk
+          cp android/app/build/outputs/apk/release/app-release.apk "$NAME"
+          echo "APK_NAME=$NAME" >> $GITHUB_ENV
+          for x in $(gh release view android-latest --repo ${{ github.repository }} --json assets -q '.assets[].name' 2>/dev/null | grep '^KarnafullyTower-' || true); do gh release delete-asset android-latest "$x" --repo ${{ github.repository }} -y || true; done
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: android-latest
           name: Android app (latest)
-          body: "কর্ণফুলী টাওয়ার Android app — build ${{ github.run_number }}"
+          body: "Karnafully Tower Android app — ${{ env.APK_NAME }}"
           prerelease: false
           make_latest: true
-          files: karnaphuli.apk
+          files: |
+            karnaphuli.apk
+            ${{ env.APK_NAME }}
       - name: Move tag to this build
         run: |
           git tag -f android-latest

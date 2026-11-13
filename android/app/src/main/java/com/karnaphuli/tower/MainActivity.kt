@@ -104,6 +104,8 @@ class MainActivity : AppCompatActivity() {
     }
     @Volatile private var inCall = false
     @Volatile private var apkNew = false
+    @Volatile private var apkName = ""
+    @Volatile private var apkUrl = ""
     private fun js(code: String) { runOnUiThread { try { web.evaluateJavascript(code, null) } catch (_: Exception) {} } }
     private fun q(x: String) = org.json.JSONObject.quote(x)
     /* v246: is a newer APK published? (GitHub release asset newer than this build) */
@@ -116,6 +118,7 @@ class MainActivity : AppCompatActivity() {
                 val a = j.getJSONArray("assets")
                 for (k in 0 until a.length()) {
                     val o = a.getJSONObject(k)
+                    if (o.optString("name").startsWith("KarnafullyTower-")) { apkName = o.optString("name"); apkUrl = o.optString("browser_download_url") }
                     if (o.optString("name").endsWith(".apk")) {
                         val fm = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
                         val t = fm.parse(o.optString("updated_at"))?.time ?: 0L
@@ -202,8 +205,10 @@ class MainActivity : AppCompatActivity() {
             Thread {
                 try {
                     val d = java.io.File(cacheDir, "apk"); d.mkdirs()
-                    val f = java.io.File(d, "karnaphuli.apk"); if (f.exists()) f.delete()
-                    var u = java.net.URL(url); var con: java.net.HttpURLConnection
+                    d.listFiles()?.forEach { it.delete() }
+                    val nm = if (apkName.isNotEmpty()) apkName else "karnaphuli.apk"
+                    val f = java.io.File(d, nm)
+                    var u = java.net.URL(if (apkUrl.isNotEmpty()) apkUrl else url); var con: java.net.HttpURLConnection
                     var hops = 0
                     while (true) {
                         con = u.openConnection() as java.net.HttpURLConnection
@@ -218,6 +223,7 @@ class MainActivity : AppCompatActivity() {
                         while (true) { val n = inp.read(buf); if (n < 0) break; out.write(buf, 0, n); got += n
                             if (total > 0) { val pc = (got * 100 / total).toInt(); if (pc != last) { last = pc; runOnUiThread { js("window.ktApkProg&&ktApkProg($pc)") } } } }
                     } }
+                    if (Build.VERSION.SDK_INT >= 29) try { mediaSave(nm, "application/vnd.android.package-archive", f.readBytes()) } catch (_: Exception) {}
                     val uri = androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
                     runOnUiThread {
                         js("window.ktApkProg&&ktApkProg(100)")
@@ -294,6 +300,8 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface fun callStart() { inCall = true; CallService.start(this@MainActivity) }
         @JavascriptInterface fun callEnd() { inCall = false; CallService.stop(this@MainActivity) }
         @JavascriptInterface fun apkNew(): Boolean = apkNew
+        @JavascriptInterface fun apkName(): String = apkName
+        @JavascriptInterface fun buildTime(): Long = BuildConfig.BUILD_TIME
         @JavascriptInterface fun hasMicCam(): Boolean = has(Manifest.permission.RECORD_AUDIO)
         @JavascriptInterface fun askBattery() {
             try { startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))) } catch (_: Exception) {}
