@@ -16,6 +16,7 @@ android {
         targetSdk = 34
         versionCode = vCode
         versionName = vName
+        buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString() + "L")
         buildConfigField("String", "START_URL", "\"" + (System.getenv("KT_URL") ?: "https://karnaphulitower.github.io/karnaphuli-app/pilot/") + "\"")
     }
     signingConfigs {
@@ -48,6 +49,7 @@ dependencies {
     implementation("androidx.core:core-ktx:1.13.1")
     implementation("androidx.appcompat:appcompat:1.7.0")
     implementation("androidx.webkit:webkit:1.11.0")
+    implementation("androidx.biometric:biometric:1.1.0")
     implementation(platform("com.google.firebase:firebase-bom:33.1.2"))
     implementation("com.google.firebase:firebase-messaging")
 }

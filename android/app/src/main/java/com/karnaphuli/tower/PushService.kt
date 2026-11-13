@@ -29,6 +29,7 @@ class PushService : FirebaseMessagingService() {
             val quiet = h >= 23 || h < 8
             val open = android.content.Intent(this, MainActivity::class.java)
                 .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                .putExtra("go", d["go"] ?: "")
             val tag = d["tag"] ?: "kt"
             val pi = android.app.PendingIntent.getActivity(this, tag.hashCode(), open,
                 android.app.PendingIntent.FLAG_UPDATE_CURRENT or android.app.PendingIntent.FLAG_IMMUTABLE)

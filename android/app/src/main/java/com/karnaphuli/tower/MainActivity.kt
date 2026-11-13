@@ -88,6 +88,7 @@ class MainActivity : AppCompatActivity() {
         if (Build.VERSION.SDK_INT >= 33 && !has(Manifest.permission.POST_NOTIFICATIONS))
             permLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
         if (b != null) web.restoreState(b) else web.loadUrl(startUrl(intent))
+        checkApk()
         try { FirebaseMessaging.getInstance().token.addOnSuccessListener { t -> Kt.prefs(this).edit().putString("fcm", t).apply(); sendToken() } } catch (_: Exception) {}
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { if (web.canGoBack()) web.goBack() else { isEnabled = false; onBackPressedDispatcher.onBackPressed(); isEnabled = true } }
@@ -96,18 +97,60 @@ class MainActivity : AppCompatActivity() {
 
     private fun startUrl(i: Intent?): String {
         val acc = i?.getStringExtra("acc")
-        return if (acc != null) BuildConfig.START_URL + (if (BuildConfig.START_URL.contains("?")) "&" else "?") + "acc=" + acc else BuildConfig.START_URL
+        val go = i?.getStringExtra("go")
+        val sep = if (BuildConfig.START_URL.contains("?")) "&" else "?"
+        return if (acc != null) BuildConfig.START_URL + sep + "acc=" + acc else if (!go.isNullOrEmpty()) BuildConfig.START_URL + sep + "go=" + Uri.encode(go) else BuildConfig.START_URL
+    }
+    @Volatile private var inCall = false
+    @Volatile private var apkNew = false
+    private fun js(code: String) { runOnUiThread { try { web.evaluateJavascript(code, null) } catch (_: Exception) {} } }
+    private fun q(x: String) = org.json.JSONObject.quote(x)
+    /* v246: is a newer APK published? (GitHub release asset newer than this build) */
+    private fun checkApk() {
+        Thread {
+            try {
+                val c = java.net.URL("https://api.github.com/repos/karnaphulitower/karnaphuli-app/releases/tags/android-latest").openConnection() as java.net.HttpURLConnection
+                c.connectTimeout = 8000; c.readTimeout = 8000; c.setRequestProperty("Accept", "application/vnd.github+json")
+                val j = org.json.JSONObject(c.inputStream.bufferedReader().readText())
+                val a = j.getJSONArray("assets")
+                for (k in 0 until a.length()) {
+                    val o = a.getJSONObject(k)
+                    if (o.optString("name").endsWith(".apk")) {
+                        val fm = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
+                        val t = fm.parse(o.optString("updated_at"))?.time ?: 0L
+                        apkNew = t > BuildConfig.BUILD_TIME + 15 * 60 * 1000
+                    }
+                }
+                if (apkNew) js("try{window.ktApkNew&&ktApkNew()}catch(e){}")
+            } catch (_: Exception) {}
+        }.start()
+    }
+    private fun mediaSave(name: String, mime: String, bytes: ByteArray): Uri? {
+        return if (Build.VERSION.SDK_INT >= 29) {
+            val cv = android.content.ContentValues().apply {
+                put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, name)
+                put(android.provider.MediaStore.MediaColumns.MIME_TYPE, mime)
+                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/Karnaphuli")
+            }
+            val u = contentResolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv) ?: return null
+            contentResolver.openOutputStream(u)?.use { it.write(bytes) }; u
+        } else {
+            val d = java.io.File(getExternalFilesDir(null), "Download"); d.mkdirs()
+            val f = java.io.File(d, name); f.writeBytes(bytes)
+            androidx.core.content.FileProvider.getUriForFile(this, "$packageName.files", f)
+        }
     }
 
     override fun onNewIntent(i: Intent) {
         super.onNewIntent(i)
+        i.getStringExtra("go")?.takeIf { it.isNotEmpty() }?.let { g -> web.evaluateJavascript("try{window.ktGo&&ktGo(" + q(g) + ")}catch(e){}", null) }
         val acc = i.getStringExtra("acc") ?: return
         AlertService.stop(this)
         web.evaluateJavascript("try{if(window.ktAcc)ktAcc('" + acc.replace("'", "") + "')}catch(e){}", null)
     }
 
     override fun onResume() { super.onResume(); Kt.foreground = true; web.onResume(); sendToken() }
-    override fun onPause() { Kt.foreground = false; web.onPause(); super.onPause() }
+    override fun onPause() { Kt.foreground = false; if (!inCall) web.onPause(); super.onPause() }
     override fun onSaveInstanceState(o: Bundle) { super.onSaveInstanceState(o); web.saveState(o) }
 
     private fun sendToken() { Kt.prefs(this).getString("fcm", null)?.let { giveToken(it) } }
@@ -128,6 +171,61 @@ class MainActivity : AppCompatActivity() {
             try { startActivity(Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(Settings.EXTRA_APP_PACKAGE, packageName)) } catch (_: Exception) {}
         }
         @JavascriptInterface fun batteryOk(): Boolean = try { (getSystemService(POWER_SERVICE) as android.os.PowerManager).isIgnoringBatteryOptimizations(packageName) } catch (_: Exception) { true }
+        /* v246: native helpers the WebView cannot do itself */
+        @JavascriptInterface fun saveFile(name: String, mime: String, b64: String): Boolean {
+            return try {
+                val bytes = android.util.Base64.decode(b64, android.util.Base64.DEFAULT)
+                val u = mediaSave(name, mime, bytes) ?: return false
+                runOnUiThread {
+                    try {
+                        startActivity(Intent.createChooser(Intent(Intent.ACTION_VIEW).setDataAndType(u, mime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), name))
+                    } catch (_: Exception) {}
+                }
+                true
+            } catch (_: Exception) { false }
+        }
+        @JavascriptInterface fun shareFile(name: String, mime: String, b64: String, text: String): Boolean {
+            return try {
+                val d = java.io.File(cacheDir, "share"); d.mkdirs()
+                val f = java.io.File(d, name); f.writeBytes(android.util.Base64.decode(b64, android.util.Base64.DEFAULT))
+                val u = androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
+                val it = Intent(Intent.ACTION_SEND).setType(mime).putExtra(Intent.EXTRA_STREAM, u).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                if (text.isNotEmpty()) it.putExtra(Intent.EXTRA_TEXT, text)
+                runOnUiThread { startActivity(Intent.createChooser(it, name)) }; true
+            } catch (_: Exception) { false }
+        }
+        @JavascriptInterface fun shareText(text: String) {
+            runOnUiThread { try { startActivity(Intent.createChooser(Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text), "Share")) } catch (_: Exception) {} }
+        }
+        @JavascriptInterface fun print(job: String) {
+            runOnUiThread {
+                try {
+                    val pm = getSystemService(PRINT_SERVICE) as android.print.PrintManager
+                    pm.print(job.ifEmpty { "Karnaphuli" }, web.createPrintDocumentAdapter(job.ifEmpty { "Karnaphuli" }), android.print.PrintAttributes.Builder().build())
+                } catch (_: Exception) {}
+            }
+        }
+        @JavascriptInterface fun bioAvail(): Boolean = try {
+            androidx.biometric.BiometricManager.from(this@MainActivity).canAuthenticate(
+                androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK) == androidx.biometric.BiometricManager.BIOMETRIC_SUCCESS
+        } catch (_: Exception) { false }
+        @JavascriptInterface fun bioAuth(id: String, title: String) {
+            runOnUiThread {
+                try {
+                    val p = androidx.biometric.BiometricPrompt(this@MainActivity, androidx.core.content.ContextCompat.getMainExecutor(this@MainActivity), object : androidx.biometric.BiometricPrompt.AuthenticationCallback() {
+                        override fun onAuthenticationSucceeded(r: androidx.biometric.BiometricPrompt.AuthenticationResult) { js("try{ktBio(" + q(id) + ",true)}catch(e){}") }
+                        override fun onAuthenticationError(c: Int, m: CharSequence) { js("try{ktBio(" + q(id) + ",false)}catch(e){}") }
+                    })
+                    val info = androidx.biometric.BiometricPrompt.PromptInfo.Builder().setTitle(title.ifEmpty { "কর্ণফুলী টাওয়ার" })
+                        .setAllowedAuthenticators(androidx.biometric.BiometricManager.Authenticators.BIOMETRIC_WEAK).setNegativeButtonText("বাতিল").build()
+                    p.authenticate(info)
+                } catch (_: Exception) { js("try{ktBio(" + q(id) + ",false)}catch(e){}") }
+            }
+        }
+        @JavascriptInterface fun callStart() { inCall = true; CallService.start(this@MainActivity) }
+        @JavascriptInterface fun callEnd() { inCall = false; CallService.stop(this@MainActivity) }
+        @JavascriptInterface fun apkNew(): Boolean = apkNew
+        @JavascriptInterface fun hasMicCam(): Boolean = has(Manifest.permission.RECORD_AUDIO)
         @JavascriptInterface fun askBattery() {
             try { startActivity(Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS, Uri.parse("package:$packageName"))) } catch (_: Exception) {}
         }
