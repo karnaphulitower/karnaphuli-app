@@ -1,0 +1,1 @@
+{"name": "Karnafully Tower", "short_name": "Karnafully", "start_url": "./", "scope": "./", "display": "standalone", "background_color": "#fffdf8", "theme_color": "#fffdf8", "icons": [{"src": "icon-r-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"}, {"src": "icon-r-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"}]}

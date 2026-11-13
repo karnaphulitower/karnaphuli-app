@@ -160,6 +160,18 @@ class MainActivity : AppCompatActivity() {
     inner class Bridge {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
+        @JavascriptInterface fun iconKind(): String {
+            val c = android.content.ComponentName(this@MainActivity, "$packageName.IconRound")
+            return if (packageManager.getComponentEnabledSetting(c) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) "round" else "square"
+        }
+        @JavascriptInterface fun setIcon(kind: String) {
+            if (kind == iconKind()) return
+            val pm = packageManager
+            val on = if (kind == "round") "IconRound" else "IconSquare"
+            val off = if (kind == "round") "IconSquare" else "IconRound"
+            pm.setComponentEnabledSetting(android.content.ComponentName(this@MainActivity, "$packageName.$on"), PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
+            pm.setComponentEnabledSetting(android.content.ComponentName(this@MainActivity, "$packageName.$off"), PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        }
         @JavascriptInterface fun stopAlarm() { AlertService.stop(this@MainActivity) }
         /* v262: SOS voice through the phone's text-to-speech */
         @JavascriptInterface fun ttsHas(lang: String): Boolean { try { Tts.init(this@MainActivity) } catch (_: Exception) {}; return Tts.has(lang) }
