@@ -26,7 +26,7 @@
     <application
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
-        android:roundIcon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="false"
         android:supportsRtl="true">
@@ -39,10 +39,10 @@
             android:windowSoftInputMode="adjustResize" />
 
         <activity-alias
-            android:name=".IconSquare"
+            android:name=".IconKT"
             android:targetActivity=".MainActivity"
             android:icon="@mipmap/ic_launcher"
-            android:roundIcon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -52,10 +52,10 @@
         </activity-alias>
 
         <activity-alias
-            android:name=".IconRound"
+            android:name=".IconBld"
             android:targetActivity=".MainActivity"
-            android:icon="@mipmap/ic_launcher_r"
-            android:roundIcon="@mipmap/ic_launcher_r"
+            android:icon="@mipmap/ic_launcher_b"
+            android:roundIcon="@mipmap/ic_launcher_b_round"
             android:enabled="false"
             android:exported="true">
             <intent-filter>
