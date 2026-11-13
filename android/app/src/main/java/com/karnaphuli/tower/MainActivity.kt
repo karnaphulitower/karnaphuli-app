@@ -157,6 +157,7 @@ class MainActivity : AppCompatActivity() {
     private fun sendToken() { Kt.prefs(this).getString("fcm", null)?.let { giveToken(it) } }
     fun giveToken(t: String) { web.evaluateJavascript("try{window.ktFcm&&ktFcm('" + t.replace("'", "") + "')}catch(e){}", null) }
 
+    private fun js(code: String) { try { web.evaluateJavascript(code, null) } catch (_: Exception) {} }
     inner class Bridge {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
@@ -167,6 +168,45 @@ class MainActivity : AppCompatActivity() {
             Tts.speak(this@MainActivity, text, lang) { runOnUiThread { try { web.evaluateJavascript("window.ktSpeakDone&&ktSpeakDone()", null) } catch (_: Exception) {} } }
         }
         @JavascriptInterface fun stopSpeak() { Tts.stop() }
+        /* v263: download the new APK inside the app and open Android's installer */
+        @JavascriptInterface fun installApk(url: String) {
+            if (Build.VERSION.SDK_INT >= 26 && !packageManager.canRequestPackageInstalls()) {
+                runOnUiThread {
+                    try { startActivity(Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES, Uri.parse("package:$packageName"))) } catch (_: Exception) {}
+                    js("window.ktApkProg&&ktApkProg(-2)")
+                }
+                return
+            }
+            Thread {
+                try {
+                    val d = java.io.File(cacheDir, "apk"); d.mkdirs()
+                    val f = java.io.File(d, "karnaphuli.apk"); if (f.exists()) f.delete()
+                    var u = java.net.URL(url); var con: java.net.HttpURLConnection
+                    var hops = 0
+                    while (true) {
+                        con = u.openConnection() as java.net.HttpURLConnection
+                        con.instanceFollowRedirects = false; con.connectTimeout = 20000; con.readTimeout = 30000
+                        val code = con.responseCode
+                        if (code in 300..399 && hops < 6) { u = java.net.URL(u, con.getHeaderField("Location")); con.disconnect(); hops++; continue }
+                        break
+                    }
+                    val total = con.contentLength.toLong(); var got = 0L; var last = -1
+                    con.inputStream.use { inp -> java.io.FileOutputStream(f).use { out ->
+                        val buf = ByteArray(32768)
+                        while (true) { val n = inp.read(buf); if (n < 0) break; out.write(buf, 0, n); got += n
+                            if (total > 0) { val pc = (got * 100 / total).toInt(); if (pc != last) { last = pc; runOnUiThread { js("window.ktApkProg&&ktApkProg($pc)") } } } }
+                    } }
+                    val uri = androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
+                    runOnUiThread {
+                        js("window.ktApkProg&&ktApkProg(100)")
+                        try {
+                            startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(uri, "application/vnd.android.package-archive")
+                                .addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_ACTIVITY_NEW_TASK))
+                        } catch (_: Exception) { js("window.ktApkProg&&ktApkProg(-1)") }
+                    }
+                } catch (e: Exception) { runOnUiThread { js("window.ktApkProg&&ktApkProg(-1)") } }
+            }.start()
+        }
         @JavascriptInterface fun canFullScreen(): Boolean =
             if (Build.VERSION.SDK_INT >= 34) getSystemService(NotificationManager::class.java).canUseFullScreenIntent() else true
         @JavascriptInterface fun askFullScreen() {
