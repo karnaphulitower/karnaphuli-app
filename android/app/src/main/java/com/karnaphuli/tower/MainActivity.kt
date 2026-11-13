@@ -160,6 +160,17 @@ class MainActivity : AppCompatActivity() {
     inner class Bridge {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
+        @JavascriptInterface fun setBars(top: String, bottom: String) {
+            runOnUiThread {
+                try {
+                    val t = android.graphics.Color.parseColor(top); val n = android.graphics.Color.parseColor(bottom)
+                    fun light(c: Int) = (0.299 * android.graphics.Color.red(c) + 0.587 * android.graphics.Color.green(c) + 0.114 * android.graphics.Color.blue(c)) > 150
+                    window.statusBarColor = t; window.navigationBarColor = n
+                    val ic = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+                    ic.isAppearanceLightStatusBars = light(t); ic.isAppearanceLightNavigationBars = light(n)
+                } catch (_: Exception) {}
+            }
+        }
         @JavascriptInterface fun iconKind(): String {
             val c = android.content.ComponentName(this@MainActivity, "$packageName.IconBld")
             return if (packageManager.getComponentEnabledSetting(c) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) "bld" else "kt"
