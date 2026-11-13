@@ -157,7 +157,6 @@ class MainActivity : AppCompatActivity() {
     private fun sendToken() { Kt.prefs(this).getString("fcm", null)?.let { giveToken(it) } }
     fun giveToken(t: String) { web.evaluateJavascript("try{window.ktFcm&&ktFcm('" + t.replace("'", "") + "')}catch(e){}", null) }
 
-    private fun js(code: String) { try { web.evaluateJavascript(code, null) } catch (_: Exception) {} }
     inner class Bridge {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
