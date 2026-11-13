@@ -57,6 +57,7 @@ class MainActivity : AppCompatActivity() {
             userAgentString = "$userAgentString KTAndroid/1"
         }
         web.addJavascriptInterface(Bridge(), "KTAndroid")
+        try { Tts.init(this) } catch (_: Exception) {}
         web.webViewClient = object : WebViewClient() {
             override fun shouldOverrideUrlLoading(v: WebView, r: WebResourceRequest): Boolean {
                 val u = r.url
@@ -160,6 +161,12 @@ class MainActivity : AppCompatActivity() {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
         @JavascriptInterface fun stopAlarm() { AlertService.stop(this@MainActivity) }
+        /* v262: SOS voice through the phone's text-to-speech */
+        @JavascriptInterface fun ttsHas(lang: String): Boolean { try { Tts.init(this@MainActivity) } catch (_: Exception) {}; return Tts.has(lang) }
+        @JavascriptInterface fun speak(text: String, lang: String) {
+            Tts.speak(this@MainActivity, text, lang) { runOnUiThread { try { web.evaluateJavascript("window.ktSpeakDone&&ktSpeakDone()", null) } catch (_: Exception) {} } }
+        }
+        @JavascriptInterface fun stopSpeak() { Tts.stop() }
         @JavascriptInterface fun canFullScreen(): Boolean =
             if (Build.VERSION.SDK_INT >= 34) getSystemService(NotificationManager::class.java).canUseFullScreenIntent() else true
         @JavascriptInterface fun askFullScreen() {

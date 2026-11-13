@@ -37,6 +37,24 @@ class AlertService : Service() {
         fun stopIf(c: Context, k: String, id: String?) { if (kind == k && (id == null || id == curId)) stop(c) }
     }
 
+    private var sosText = ""
+    /** SOS: siren 5 s → speak who/what → siren again, until stopped. */
+    private val sayCycle = object : Runnable {
+        override fun run() {
+            if (kind != "sos" || sosText.isEmpty()) return
+            sirenOn = false
+            try { track?.stop(); track?.release() } catch (_: Exception) {}
+            track = null
+            Tts.speak(this@AlertService, "সতর্কতা! " + sosText, "bn-BD") {
+                h.post {
+                    if (kind == "sos") {
+                        try { startTone(true) } catch (_: Exception) {}
+                        h.postDelayed(this, 6000)
+                    }
+                }
+            }
+        }
+    }
     private var player: MediaPlayer? = null
     private var track: AudioTrack? = null
     @Volatile private var sirenOn = false
@@ -79,6 +97,11 @@ class AlertService : Service() {
 
         h.removeCallbacksAndMessages(null)
         h.postDelayed({ stopSelf() }, if (k == "call") 60_000L else 180_000L)
+        if (k == "sos") {
+            sosText = (title + "। " + body).replace(Regex("[\\p{So}\\p{Cn}\\uFE0F\\u200D]"), " ").replace(Regex("\\s+"), " ").trim()
+            try { Tts.init(this) } catch (_: Exception) {}
+            h.postDelayed(sayCycle, 5000)
+        }
         return START_NOT_STICKY
     }
 
@@ -204,6 +227,7 @@ class AlertService : Service() {
 
     override fun onDestroy() {
         h.removeCallbacksAndMessages(null)
+        try { Tts.stop() } catch (_: Exception) {}
         stopSound()
         try { wake?.release() } catch (_: Exception) {}
         kind = null; curId = null
