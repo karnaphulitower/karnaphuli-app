@@ -50,6 +50,14 @@ class MainActivity : AppCompatActivity() {
         Kt.channels(this)
         web = WebView(this)
         setContentView(web)
+        try {
+            val pr = Kt.prefs(this)
+            val t = android.graphics.Color.parseColor(pr.getString("barT", "#fffdf8")); val n = android.graphics.Color.parseColor(pr.getString("barB", "#fffdf8"))
+            fun light(c: Int) = (0.299 * android.graphics.Color.red(c) + 0.587 * android.graphics.Color.green(c) + 0.114 * android.graphics.Color.blue(c)) > 150
+            window.statusBarColor = t; window.navigationBarColor = n; web.setBackgroundColor(t)
+            val ic = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
+            ic.isAppearanceLightStatusBars = light(t); ic.isAppearanceLightNavigationBars = light(n)
+        } catch (_: Exception) {}
         web.settings.apply {
             javaScriptEnabled = true; domStorageEnabled = true; databaseEnabled = true
             mediaPlaybackRequiresUserGesture = false; allowFileAccess = false
@@ -169,6 +177,7 @@ class MainActivity : AppCompatActivity() {
                     val t = android.graphics.Color.parseColor(top); val n = android.graphics.Color.parseColor(bottom)
                     fun light(c: Int) = (0.299 * android.graphics.Color.red(c) + 0.587 * android.graphics.Color.green(c) + 0.114 * android.graphics.Color.blue(c)) > 150
                     window.statusBarColor = t; window.navigationBarColor = n
+                    Kt.prefs(this@MainActivity).edit().putString("barT", top).putString("barB", bottom).apply()
                     val ic = androidx.core.view.WindowInsetsControllerCompat(window, window.decorView)
                     ic.isAppearanceLightStatusBars = light(t); ic.isAppearanceLightNavigationBars = light(n)
                 } catch (_: Exception) {}
