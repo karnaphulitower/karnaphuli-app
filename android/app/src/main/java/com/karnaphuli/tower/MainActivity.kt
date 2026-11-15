@@ -185,7 +185,7 @@ class MainActivity : AppCompatActivity() {
         }
         @JavascriptInterface fun iconKind(): String {
             val c = android.content.ComponentName(this@MainActivity, "$packageName.IconBld")
-            return if (packageManager.getComponentEnabledSetting(c) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED) "bld" else "kt"
+            val st = packageManager.getComponentEnabledSetting(c); return if (st == PackageManager.COMPONENT_ENABLED_STATE_DISABLED) "kt" else "bld"
         }
         @JavascriptInterface fun setIcon(kind: String) {
             if (kind == iconKind()) return
