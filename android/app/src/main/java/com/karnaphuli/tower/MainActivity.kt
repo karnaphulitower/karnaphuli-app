@@ -111,6 +111,27 @@ class MainActivity : AppCompatActivity() {
         return if (acc != null) BuildConfig.START_URL + sep + "acc=" + acc else if (!go.isNullOrEmpty()) BuildConfig.START_URL + sep + "go=" + Uri.encode(go) else BuildConfig.START_URL
     }
     @Volatile private var inCall = false
+    /* v390: phone-call audio mode = hardware echo cancel + noise suppress, earpiece by default (no echo/reverb) */
+    private fun am() = getSystemService(AUDIO_SERVICE) as android.media.AudioManager
+    private fun callAudio(on: Boolean) {
+        try {
+            val m = am()
+            if (on) { m.mode = android.media.AudioManager.MODE_IN_COMMUNICATION; volumeControlStream = android.media.AudioManager.STREAM_VOICE_CALL; speaker(false) }
+            else { if (Build.VERSION.SDK_INT >= 31) m.clearCommunicationDevice() else { m.isSpeakerphoneOn = false }; m.mode = android.media.AudioManager.MODE_NORMAL; volumeControlStream = android.media.AudioManager.USE_DEFAULT_STREAM_TYPE }
+        } catch (_: Exception) {}
+    }
+    private fun speaker(on: Boolean) {
+        try {
+            val m = am()
+            if (Build.VERSION.SDK_INT >= 31) {
+                val want = if (on) android.media.AudioDeviceInfo.TYPE_BUILTIN_SPEAKER else android.media.AudioDeviceInfo.TYPE_BUILTIN_EARPIECE
+                val list = m.availableCommunicationDevices
+                val ext = list.firstOrNull { it.type == android.media.AudioDeviceInfo.TYPE_BLUETOOTH_SCO || it.type == android.media.AudioDeviceInfo.TYPE_WIRED_HEADSET || it.type == android.media.AudioDeviceInfo.TYPE_USB_HEADSET || it.type == android.media.AudioDeviceInfo.TYPE_BLE_HEADSET }
+                val d = if (!on && ext != null) ext else list.firstOrNull { it.type == want }
+                if (d != null) m.setCommunicationDevice(d)
+            } else { m.isSpeakerphoneOn = on }
+        } catch (_: Exception) {}
+    }
     @Volatile private var apkNew = false
     @Volatile private var apkName = ""
     @Volatile private var apkUrl = ""
@@ -306,8 +327,9 @@ class MainActivity : AppCompatActivity() {
                 } catch (_: Exception) { js("try{ktBio(" + q(id) + ",false)}catch(e){}") }
             }
         }
-        @JavascriptInterface fun callStart() { inCall = true; CallService.start(this@MainActivity) }
-        @JavascriptInterface fun callEnd() { inCall = false; CallService.stop(this@MainActivity) }
+        @JavascriptInterface fun callStart() { inCall = true; CallService.start(this@MainActivity); runOnUiThread { callAudio(true) } }
+        @JavascriptInterface fun callEnd() { inCall = false; CallService.stop(this@MainActivity); runOnUiThread { callAudio(false) } }
+        @JavascriptInterface fun callSpeaker(on: Boolean) { runOnUiThread { speaker(on) } }
         @JavascriptInterface fun apkNew(): Boolean = apkNew
         @JavascriptInterface fun apkName(): String = apkName
         @JavascriptInterface fun buildTime(): Long = BuildConfig.BUILD_TIME
