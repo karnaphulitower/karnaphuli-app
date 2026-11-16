@@ -1075,7 +1075,7 @@ body.desk #dside .dls::-webkit-scrollbar{width:8px}body.desk #dside .dls::-webki
 .rgw .rgr{gap:6px!important;margin-bottom:6px!important}
 .card:has(#rgtype) [style*="grid-template-columns"],.rgw .rgr{column-gap:6px!important;row-gap:6px!important}
 .rgw label.f{gap:0!important;margin:0}
-.rgw .rgsd{grid-template-columns:minmax(90px,1fr) minmax(0,1.6fr)}
+.rgw .rgsd{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 .rgw .rgocc{gap:6px;margin-top:0}
 .rgw .rgocc .og .ph{color:#16a34a;font-weight:700}.rgw .rgocc .oo .ph{color:#ea580c;font-weight:700}.rgw .rgocc .ov .ph{color:#64748b;font-weight:700}
 .rgw .rgph{margin-bottom:6px;gap:8px}.rgw .rgph .crop.face{width:56px;height:56px}
@@ -1084,6 +1084,19 @@ body.desk #dside .dls::-webkit-scrollbar{width:8px}body.desk #dside .dls::-webki
 .rgw .rgown{margin:0 0 6px}
 .rgw label.f:has(#rgemail){width:100%;max-width:none}.rgw #rgemail{width:100%;box-sizing:border-box}
 .rgw .rgmw{grid-template-columns:minmax(0,1fr) minmax(0,1.25fr)}.rgw #rgwaMode{font-size:13.5px;padding-left:7px!important;padding-right:18px!important}
+
+/* v327 registration row spacing */
+.rgw .rgr{row-gap:9px!important;margin-bottom:9px!important}
+.rgw .rgbx{padding:9px}
+.rgw label.f:has(#rgemail){margin-top:0}
+.rgw .rgph{margin-bottom:9px}
+/* v327 field names inside the boxes, app-wide */
+label.f.fin{position:relative;display:block}
+label.f.fin>.fcap{position:absolute;left:11px;right:11px;top:5px;font-size:10.5px;line-height:1.15;color:var(--muted);pointer-events:none;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;z-index:1;font-weight:500}
+label.f.fin>.fcap *{font-size:inherit!important}
+label.f.fin>input,label.f.fin>select,label.f.fin>textarea,label.f.fin>.fwrap>input{padding-top:18px!important;padding-bottom:6px!important;width:100%;box-sizing:border-box}
+label.f.fin>select{background-position:right 10px center}
+label.f.fin.ferr>.fcap{color:var(--bad)}
 </style>
 
 <div class="scenery" aria-hidden="true"><svg viewBox="0 0 1200 200" preserveAspectRatio="none"><path d="M0 120 L120 70 L230 115 L360 40 L470 105 L600 55 L720 110 L850 35 L980 100 L1100 60 L1200 95 L1200 200 L0 200Z" fill="var(--hill1)" opacity=".7"/><path d="M0 150 Q150 110 300 140 T600 135 T900 140 T1200 130 L1200 200 L0 200Z" fill="var(--hill2)" opacity=".75"/><path d="M0 178 Q200 160 420 176 T820 172 T1200 170 L1200 200 L0 200Z" fill="var(--river)" opacity=".9"/></svg></div>
@@ -3815,7 +3828,7 @@ function kmItems(){const it=[];const add=(ic,t,fn,g)=>it.push({ic,t,fn,g});
   if(S.session)add('🚪','Logout',()=>{if(window.fbOut&&window.KT_FB){go('logout')}else go('logout')},'app');
   return it}
 function kmOpen(){let d=document.getElementById('kmenu');if(!d){d=document.createElement('div');d.id='kmenu';d.innerHTML='<div class="pp"></div>';d.addEventListener('click',e=>{if(e.target===d)kmClose()});document.body.appendChild(d)}const it=kmItems();KM=it;let h='',g='';it.forEach((x,i)=>{if(x.g!==g){if(g)h+='<div class="sep"></div>';h+='<div class="gh">'+(x.g==='page'?L('এই পাতা','This page'):L('App','App'))+'</div>';g=x.g}h+='<button data-act="kmgo" data-i="'+i+'">'+(x.ic?'<span>'+x.ic+'</span>':'')+'<span>'+esc(x.t)+'</span></button>'});d.querySelector('.pp').innerHTML=h+'<div class="gh" data-act="devtap" style="text-align:center;opacity:.6;cursor:default;user-select:none">'+APPV+apkVerTxt()+'</div>';d.classList.add('on');document.body.classList.remove('barshide')}
-const APPV='v326';let KM=[];function kmClose(){const d=document.getElementById('kmenu');if(d)d.classList.remove('on')}
+const APPV='v327';let KM=[];function kmClose(){const d=document.getElementById('kmenu');if(d)d.classList.remove('on')}
 function kmPrint(){const col=rpCol();openM('<h3>🖨 '+L('প্রিন্ট / PDF / শেয়ার','Print / PDF / Share')+'</h3><div class="kmpg"><label>'+L('কাগজ','Paper')+'<select data-rp="size">'+PAPERS.map(p=>'<option value="'+p[0]+'"'+(PDFSZ===p[0]?' selected':'')+'>'+p[1]+'</option>').join('')+'</select></label><label>'+L('দিক','Orientation')+'<select id="kmori"><option value="p"'+(pref().kmOri==='l'?'':' selected')+'>↕ '+L('খাড়া','Portrait')+'</option><option value="l"'+(pref().kmOri==='l'?' selected':'')+'>↔ '+L('আড়াআড়ি','Landscape')+'</option></select></label><label>'+L('মার্জিন','Margins')+'<select data-rp="marg">'+MARGS.map(m=>'<option value="'+m[0]+'"'+((pref().rpMarg||'normal')===m[0]?' selected':'')+'>'+L(m[2],m[1])+'</option>').join('')+'</select></label></div><div class="kmpg2"><label>'+L('রঙ','Colour')+'<select id="kmcol"><option value="color"'+(col==='bw'?'':' selected')+'>🎨 '+L('রঙিন','Colour')+'</option><option value="bw"'+(col==='bw'?' selected':'')+'>⚫ '+L('সাদা-কালো','Black & white')+'</option></select></label><button type="button" class="btn sec sm" data-act="rpset" style="align-self:flex-end;height:36px">⚙ '+L('মাপ ও মার্জিন বিস্তারিত','Size & margin details')+'</button></div><div class="kmacts"><button class="btn" data-act="kmdo" data-o="print">🖨 Print</button><button class="btn sec" data-act="kmdo" data-o="pdf">⬇ PDF</button><button class="btn sec" data-act="kmdo" data-o="share">📤 '+L('শেয়ার','Share')+'</button><button class="btn sec" data-act="kmdo" data-o="wa">💬 WhatsApp</button></div>')}
 function kmPrintGo(bw){const z=document.getElementById('printzone')||(()=>{const x=document.createElement('div');x.id='printzone';x.style.display='none';document.body.appendChild(x);return x})();const t=(document.querySelector('#main .pt')||{}).textContent||'';z.innerHTML='<h2>'+esc(L('কর্ণফুলী টাওয়ার','Karnaphuli Tower'))+(t?' · '+esc(t):'')+'</h2>'+document.getElementById('main').innerHTML;z.querySelectorAll('button,.backbar,.frzbar,.zmrow,.zmbar,select,input,textarea,.ptrow>h2.pt,h2.pt,.rpbar,.rptool').forEach(b=>b.remove());z.querySelectorAll('table').forEach(t=>t.style.zoom='');{const q=pref();window._rpOld=q.rpCol;q.rpCol=bw?'bw':'color';prefSave(q)}rpColorize(z);{const q=pref();q.rpCol=window._rpOld;prefSave(q)}document.body.classList.add('pz');document.body.classList.toggle('pzbw',!!bw);{const o=$('#kmori');window._kmOri=o?o.value:(pref().kmOri||'p');const q=pref();q.kmOri=window._kmOri;prefSave(q)}const done=()=>{window._kmOri=null;try{pageCSS()}catch(e){}document.body.classList.remove('pz','pzbw');window.removeEventListener('afterprint',done)};window.addEventListener('afterprint',done);setTimeout(()=>{try{doPrint()}catch(e){}setTimeout(done,1500)},60)}
 async function kmShare(){const t=((document.querySelector('#main .pt')||{}).textContent||'').trim();const txt=L('কর্ণফুলী টাওয়ার','Karnaphuli Tower')+(t?' · '+t:'')+'\n'+location.href;try{if(navigator.share){await navigator.share({title:t||document.title,text:txt,url:location.href});return}}catch(e){if(e&&e.name==='AbortError')return}try{await navigator.clipboard.writeText(txt);toast(L('Link copy হয়েছে','Link copied'))}catch(e){toast(txt)}}
@@ -4693,5 +4706,15 @@ function regReview(u){const f=flat(u.flat)||{};const host=regHost(u);const iHost
    '<div class="rvbtn"><button class="btn" id="rvok" disabled data-act="'+(iHost?'uhost':'uok')+'" data-id="'+u.id+'">✓ '+L('অনুমোদন','Approve')+'</button><button class="btn sec" style="color:var(--bad);border-color:var(--bad)" data-act="rvbad">✖ '+L('ভুল আছে','Something is wrong')+'</button></div><div id="rvbadw" hidden style="margin-top:8px"><label class="f">'+L('কী ভুল আছে','What is wrong')+'<textarea id="rvwhy" rows="2"></textarea></label><button class="btn bad" data-act="uno" data-id="'+u.id+'" style="width:100%">'+L('ফেরত পাঠান','Send back')+'</button></div>':R.map(r=>'<div class="muted">'+esc(r[1])+'</div>').join(''))+
    (fin||can('users')?'<button class="btn sec" data-act="ufwd" data-id="'+u.id+'" style="margin-top:8px;width:100%;font-size:13px">➡ '+L('সভাপতি/সেক্রেটারির কাছে পাঠান','Forward to president/secretary')+'</button>':'')}
 document.addEventListener('click',ev=>{const el=ev.target.closest&&ev.target.closest('[data-act="rvbad"]');if(!el)return;ev.stopImmediatePropagation();const w=document.getElementById('rvbadw');if(w){w.hidden=false;const t=document.getElementById('rvwhy');if(t)t.focus()}},true);
+
+/* v327: put each field's name inside its box (small caption) to save space */
+(function(){const OK=e=>e&&((e.tagName==='INPUT'&&!['checkbox','radio','file','hidden','range','color','button','submit'].includes(e.type))||e.tagName==='SELECT'||e.tagName==='TEXTAREA');
+ function one(lb){if(lb.classList.contains('fin')||lb.classList.contains('fno')||lb.closest('.rgw'))return;const kids=[...lb.childNodes];const ctl=kids.findIndex(n=>n.nodeType===1&&(OK(n)||n.querySelector&&n.querySelector('input,select,textarea')));if(ctl<1){lb.classList.add('fno');return}const c=kids[ctl];if(!OK(c)){lb.classList.add('fno');return}
+  const ctrls=lb.querySelectorAll('input:not([type=hidden]),select,textarea');if(ctrls.length!==1){lb.classList.add('fno');return}
+  const pre=kids.slice(0,ctl);if(pre.some(n=>n.nodeType===1&&(n.matches('button,a,.row,.tabs,img')||n.querySelector('button,a,img'))))return lb.classList.add('fno');const txt=pre.map(n=>n.textContent).join('').replace(/\s+/g,' ').trim();if(!txt){lb.classList.add('fno');return}
+  const sp=document.createElement('span');sp.className='fcap';pre.forEach(n=>sp.appendChild(n));lb.insertBefore(sp,c);lb.classList.add('fin');if(!c.getAttribute('aria-label'))c.setAttribute('aria-label',txt);
+  if(txt.length>24){window.LONGCAP=window.LONGCAP||{};window.LONGCAP[txt]=(typeof route!=='undefined'?route:'')}}
+ let q=0;function run(){q=0;document.querySelectorAll('label.f:not(.fin):not(.fno)').forEach(one)}
+ new MutationObserver(()=>{if(!q)q=requestAnimationFrame(run)}).observe(document.documentElement,{childList:true,subtree:true});})();
 </script>
 </body></html>
