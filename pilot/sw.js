@@ -1,9 +1,9 @@
-const C='kt-1794822735';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.json','firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'])))});
+const C='kt-1794822901';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.json','firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'])))});
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('push',e=>{let d={};try{d=e.data?e.data.json():{}}catch(x){d={title:'কর্ণফুলী টাওয়ার',body:e.data?e.data.text():''}}
  const sos=d.t==='sos',call=d.t==='call';const hh=new Date(Date.now()+216e5).getUTCHours();const qt=!sos&&!call&&(hh>=23||hh<8);
  e.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(cs=>{if(cs.some(c=>c.visibilityState==='visible'&&c.focused))return;
-  return self.registration.showNotification(d.title||'কর্ণফুলী টাওয়ার',{body:d.body||'',tag:d.tag||'kt',renotify:true,requireInteraction:sos||call,icon:'icon-b-192.png',badge:'icon-b-192.png',
+  return self.registration.showNotification(d.title||'কর্ণফুলী টাওয়ার',{body:d.body||'',tag:d.tag||'kt',renotify:true,requireInteraction:sos||call,icon:'icon-b-192.png',badge:'badge-96.png',
    vibrate:sos?[1000,300,1000,300,1000,300,1000,300,1000]:call?[700,400,700,400,700,400,700]:qt?[]:[200],silent:qt,data:d,actions:call?[{action:'acc',title:'📞 ধরুন'}]:[]})}))});
 self.addEventListener('notificationclick',e=>{const d=e.notification.data||{};e.notification.close();const acc=e.action==='acc'||d.t==='call';
  const url='./'+(d.t==='call'?(acc?'?acc='+d.id:'?call='+d.id):d.t==='sos'?'?sos='+d.id:'');

@@ -36,6 +36,8 @@ class PushService : FirebaseMessagingService() {
             val body = d["body"] ?: ""
             val n = androidx.core.app.NotificationCompat.Builder(this, Kt.CH_GEN)
                 .setSmallIcon(R.drawable.ic_stat)
+                .setColor(0xFF1E3A8A.toInt())
+                .setLargeIcon(android.graphics.BitmapFactory.decodeResource(resources, R.drawable.kt_large))
                 .setContentTitle(d["title"])
                 .setContentText(body)
                 .setStyle(androidx.core.app.NotificationCompat.BigTextStyle().bigText(body))
