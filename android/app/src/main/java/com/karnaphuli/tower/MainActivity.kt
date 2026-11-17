@@ -158,12 +158,14 @@ class MainActivity : AppCompatActivity() {
             } catch (_: Exception) {}
         }.start()
     }
+    private var lastUri: Uri? = null
+    private var lastMime: String = "*/*"
     private fun mediaSave(name: String, mime: String, bytes: ByteArray): Uri? {
         return if (Build.VERSION.SDK_INT >= 29) {
             val cv = android.content.ContentValues().apply {
                 put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, name)
                 put(android.provider.MediaStore.MediaColumns.MIME_TYPE, mime)
-                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/Karnaphuli")
+                put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, android.os.Environment.DIRECTORY_DOWNLOADS + "/Karnaphuli Tower")
             }
             val u = contentResolver.insert(android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI, cv) ?: return null
             contentResolver.openOutputStream(u)?.use { it.write(bytes) }; u
@@ -288,6 +290,30 @@ class MainActivity : AppCompatActivity() {
                 }
                 true
             } catch (_: Exception) { false }
+        }
+        /* v484: save without opening anything; the app shows where it went */
+        @JavascriptInterface fun saveOnly(name: String, mime: String, b64: String): Boolean {
+            return try {
+                val bytes = android.util.Base64.decode(b64, android.util.Base64.DEFAULT)
+                val u = mediaSave(name, mime, bytes) ?: return false
+                lastUri = u; lastMime = mime; true
+            } catch (_: Exception) { false }
+        }
+        @JavascriptInterface fun openLast(): Boolean {
+            val u = lastUri ?: return false
+            runOnUiThread { try { startActivity(Intent.createChooser(Intent(Intent.ACTION_VIEW).setDataAndType(u, lastMime).addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION), "Open")) } catch (_: Exception) {} }
+            return true
+        }
+        @JavascriptInterface fun openFolder(): Boolean {
+            runOnUiThread {
+                try {
+                    val u = android.provider.DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Download/Karnaphuli Tower")
+                    startActivity(Intent(Intent.ACTION_VIEW).setDataAndType(u, "vnd.android.document/directory").addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION))
+                } catch (_: Exception) {
+                    try { startActivity(Intent(android.app.DownloadManager.ACTION_VIEW_DOWNLOADS).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: Exception) {}
+                }
+            }
+            return true
         }
         @JavascriptInterface fun shareFile(name: String, mime: String, b64: String, text: String): Boolean {
             return try {

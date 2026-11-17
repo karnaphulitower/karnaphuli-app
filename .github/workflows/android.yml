@@ -29,12 +29,12 @@ jobs:
       - name: Rename (version + Dhaka date/time in file name)
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
-          STAMP=$(TZ=Asia/Dhaka date +%Y-%m-%d_%H-%M)
-          NAME="KarnafullyTower-v2.0.${{ github.run_number }}-${STAMP}.apk"
+          STAMP=$(TZ=Asia/Dhaka date +%H-%M_%d-%m-%y)
+          NAME="KT-App-v2.0.${{ github.run_number }}_${STAMP}.apk"
           cp android/app/build/outputs/apk/release/app-release.apk karnaphuli.apk
           cp android/app/build/outputs/apk/release/app-release.apk "$NAME"
           echo "APK_NAME=$NAME" >> $GITHUB_ENV
-          for x in $(gh release view android-latest --repo ${{ github.repository }} --json assets -q '.assets[].name' 2>/dev/null | grep '^KarnafullyTower-' || true); do gh release delete-asset android-latest "$x" --repo ${{ github.repository }} -y || true; done
+          for x in $(gh release view android-latest --repo ${{ github.repository }} --json assets -q '.assets[].name' 2>/dev/null | grep -E '^(KarnafullyTower-|KT-App-)' || true); do gh release delete-asset android-latest "$x" --repo ${{ github.repository }} -y || true; done
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: android-latest
