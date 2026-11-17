@@ -1,4 +1,4 @@
-const C='kt-1794903078';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.json','firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'])))});
+const C='kt-1794903321';self.addEventListener('install',e=>{self.skipWaiting();e.waitUntil(caches.open(C).then(c=>c.addAll(['./','index.html','manifest.json','firebase-app-compat.js','firebase-auth-compat.js','firebase-firestore-compat.js'])))});
 self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==C).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
 self.addEventListener('push',e=>{let d={};try{d=e.data?e.data.json():{}}catch(x){d={title:'কর্ণফুলী টাওয়ার',body:e.data?e.data.text():''}}
  const sos=d.t==='sos',call=d.t==='call';const hh=new Date(Date.now()+216e5).getUTCHours();const qt=!sos&&!call&&(hh>=23||hh<8);
