@@ -17,7 +17,7 @@ android {
         versionCode = vCode
         versionName = vName
         buildConfigField("long", "BUILD_TIME", System.currentTimeMillis().toString() + "L")
-        buildConfigField("String", "START_URL", "\"" + (System.getenv("KT_URL") ?: "https://karnaphulitower.github.io/karnaphuli-app/pilot/") + "\"")
+        buildConfigField("String", "START_URL", "\"" + (System.getenv("KT_URL") ?: "https://karnaphuli-tower.pages.dev/pilot/") + "\"")
     }
     signingConfigs {
         create("rel") {

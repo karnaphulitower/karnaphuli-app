@@ -137,23 +137,16 @@ class MainActivity : AppCompatActivity() {
     @Volatile private var apkUrl = ""
     private fun js(code: String) { runOnUiThread { try { web.evaluateJavascript(code, null) } catch (_: Exception) {} } }
     private fun q(x: String) = org.json.JSONObject.quote(x)
-    /* v246: is a newer APK published? (GitHub release asset newer than this build) */
+    /* v491: is a newer APK published? apk.json on our own site (works with a private repo) */
     private fun checkApk() {
         Thread {
             try {
-                val c = java.net.URL("https://api.github.com/repos/karnaphulitower/karnaphuli-app/releases/tags/android-latest").openConnection() as java.net.HttpURLConnection
-                c.connectTimeout = 8000; c.readTimeout = 8000; c.setRequestProperty("Accept", "application/vnd.github+json")
+                val base = Uri.parse(BuildConfig.START_URL)
+                val c = java.net.URL("https://" + base.host + "/apk/apk.json?t=" + System.currentTimeMillis()).openConnection() as java.net.HttpURLConnection
+                c.connectTimeout = 8000; c.readTimeout = 8000; c.useCaches = false
                 val j = org.json.JSONObject(c.inputStream.bufferedReader().readText())
-                val a = j.getJSONArray("assets")
-                for (k in 0 until a.length()) {
-                    val o = a.getJSONObject(k)
-                    if (o.optString("name").startsWith("KarnafullyTower-") || o.optString("name").startsWith("KT-App-")) { apkName = o.optString("name"); apkUrl = o.optString("browser_download_url") }
-                    if (o.optString("name").endsWith(".apk")) {
-                        val fm = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
-                        val t = fm.parse(o.optString("updated_at"))?.time ?: 0L
-                        apkNew = t > BuildConfig.BUILD_TIME + 15 * 60 * 1000
-                    }
-                }
+                apkName = j.optString("name"); apkUrl = j.optString("url")
+                apkNew = j.optLong("t") > BuildConfig.BUILD_TIME + 15 * 60 * 1000
                 if (apkNew) js("try{window.ktApkNew&&ktApkNew()}catch(e){}")
             } catch (_: Exception) {}
         }.start()

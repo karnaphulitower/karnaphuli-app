@@ -49,3 +49,13 @@ jobs:
         run: |
           git tag -f android-latest
           git push -f origin android-latest
+      - name: Put the APK on our own site (Cloudflare Pages serves /apk/)
+        run: |
+          git config user.name karnaphulitower
+          git config user.email 355517763+karnaphulitower@users.noreply.github.com
+          git fetch -q origin main && git checkout -q -B main origin/main
+          mkdir -p apk && rm -f apk/*.apk
+          cp karnaphuli.apk apk/karnaphuli.apk
+          T=$(($(date +%s)*1000))
+          printf '{"name":"%s","url":"https://karnaphuli-tower.pages.dev/apk/karnaphuli.apk","t":%s,"v":"2.0.%s"}\n' "$APK_NAME" "$T" "${{ github.run_number }}" > apk/apk.json
+          git add apk && git commit -qm "APK ${APK_NAME} on site" && for i in 1 2 3 4; do git pull -q --rebase origin main && git push -q origin main && break; sleep 5; done
