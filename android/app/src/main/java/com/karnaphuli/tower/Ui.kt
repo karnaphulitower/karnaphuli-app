@@ -45,7 +45,8 @@ abstract class AlertActivity : Activity() {
         setOnClickListener { onClick() }
     }
     protected fun openApp(acc: String?) {
-        val i = Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        val locked = try { (getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager).isKeyguardLocked } catch (_: Exception) { false }
+        val i = Intent(this, if (locked) LockActivity::class.java else MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP)
         if (acc != null) i.putExtra("acc", acc)
         startActivity(i)
     }

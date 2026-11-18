@@ -114,7 +114,7 @@ class AlertService : Service() {
     private fun callNotif(id: String, title: String, body: String, video: Boolean): Notification {
         val full = pi(CallActivity::class.java, id, title, body, video, 11)
         val ans = PendingIntent.getActivity(this, 12,
-            Intent(this, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("acc", id),
+            Intent(this, if (try { (getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager).isKeyguardLocked } catch (_: Exception) { false }) LockActivity::class.java else MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP).putExtra("acc", id),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)
         val dec = PendingIntent.getBroadcast(this, 13, Intent(this, ActionReceiver::class.java).setAction("kt.DECLINE").putExtra("id", id),
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE)

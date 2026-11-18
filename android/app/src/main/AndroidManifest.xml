@@ -65,6 +65,17 @@
         </activity-alias>
 
         <activity
+            android:name=".LockActivity"
+            android:exported="false"
+            android:showWhenLocked="true"
+            android:turnScreenOn="true"
+            android:launchMode="singleTask"
+            android:taskAffinity="com.karnaphuli.tower.lock"
+            android:excludeFromRecents="true"
+            android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|uiMode"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
             android:name=".AlarmActivity"
             android:exported="false"
             android:showWhenLocked="true"

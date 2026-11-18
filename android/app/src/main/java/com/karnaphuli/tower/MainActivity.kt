@@ -14,7 +14,9 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.messaging.FirebaseMessaging
 
-class MainActivity : AppCompatActivity() {
+open class MainActivity : AppCompatActivity() {
+    /* v493: LockActivity (subclass) shows over the lock screen for SOS / calls / family SOS */
+    open val lockMode = false
     companion object {
         private var inst: java.lang.ref.WeakReference<MainActivity>? = null
         fun pushToken(t: String) { inst?.get()?.let { a -> a.runOnUiThread { a.giveToken(t) } } }
@@ -46,6 +48,11 @@ class MainActivity : AppCompatActivity() {
     @SuppressLint("SetJavaScriptEnabled")
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
+        if (lockMode) {
+            if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(true); setTurnScreenOn(true) }
+            @Suppress("DEPRECATION")
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+        }
         inst = java.lang.ref.WeakReference(this)
         Kt.channels(this)
         web = WebView(this)
@@ -94,10 +101,11 @@ class MainActivity : AppCompatActivity() {
                 return try { fileLauncher.launch(p.createIntent()); true } catch (_: Exception) { fileCb = null; false }
             }
         }
-        if (Build.VERSION.SDK_INT >= 33 && !has(Manifest.permission.POST_NOTIFICATIONS))
+        if (!lockMode && Build.VERSION.SDK_INT >= 33 && !has(Manifest.permission.POST_NOTIFICATIONS))
             permLauncher.launch(arrayOf(Manifest.permission.POST_NOTIFICATIONS))
+        if (!lockMode) Kt.quick(this)
         if (b != null) web.restoreState(b) else web.loadUrl(startUrl(intent))
-        checkApk()
+        if (!lockMode) checkApk()
         try { FirebaseMessaging.getInstance().token.addOnSuccessListener { t -> Kt.prefs(this).edit().putString("fcm", t).apply(); sendToken() } } catch (_: Exception) {}
         onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
             override fun handleOnBackPressed() { if (web.canGoBack()) web.goBack() else { isEnabled = false; onBackPressedDispatcher.onBackPressed(); isEnabled = true } }
@@ -187,6 +195,12 @@ class MainActivity : AppCompatActivity() {
     inner class Bridge {
         @JavascriptInterface fun fcmToken(): String = Kt.prefs(this@MainActivity).getString("fcm", "") ?: ""
         @JavascriptInterface fun version(): String = BuildConfig.VERSION_NAME
+        @JavascriptInterface fun lockMode(): Boolean = this@MainActivity.lockMode
+        @JavascriptInterface fun keyLocked(): Boolean = try { (getSystemService(KEYGUARD_SERVICE) as android.app.KeyguardManager).isKeyguardLocked } catch (_: Exception) { false }
+        @JavascriptInterface fun finishLock() { runOnUiThread { if (this@MainActivity.lockMode) finish() } }
+        @JavascriptInterface fun openMain() { runOnUiThread { try { startActivity(Intent(this@MainActivity, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: Exception) {}; if (this@MainActivity.lockMode) finish() } }
+        @JavascriptInterface fun quickSos(on: Boolean) { Kt.prefs(this@MainActivity).edit().putBoolean("quick", on).apply(); runOnUiThread { Kt.quick(this@MainActivity) } }
+        @JavascriptInterface fun quickSosOn(): Boolean = Kt.prefs(this@MainActivity).getBoolean("quick", true)
         @JavascriptInterface fun setBars(top: String, bottom: String) {
             runOnUiThread {
                 try {
