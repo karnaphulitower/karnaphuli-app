@@ -147,7 +147,7 @@ class MainActivity : AppCompatActivity() {
                 val a = j.getJSONArray("assets")
                 for (k in 0 until a.length()) {
                     val o = a.getJSONObject(k)
-                    if (o.optString("name").startsWith("KarnafullyTower-")) { apkName = o.optString("name"); apkUrl = o.optString("browser_download_url") }
+                    if (o.optString("name").startsWith("KarnafullyTower-") || o.optString("name").startsWith("KT-App-")) { apkName = o.optString("name"); apkUrl = o.optString("browser_download_url") }
                     if (o.optString("name").endsWith(".apk")) {
                         val fm = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", java.util.Locale.US).apply { timeZone = java.util.TimeZone.getTimeZone("UTC") }
                         val t = fm.parse(o.optString("updated_at"))?.time ?: 0L
