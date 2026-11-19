@@ -45,7 +45,7 @@ class AlertService : Service() {
             sirenOn = false
             try { track?.stop(); track?.release() } catch (_: Exception) {}
             track = null
-            Tts.speak(this@AlertService, "সতর্কতা! " + sosText, "bn-BD") {
+            Tts.speak(this@AlertService, (if (sosText.startsWith("জরুরি")) "" else "সতর্কতা! ") + sosText, "bn-BD") {
                 h.post {
                     if (kind == "sos") {
                         try { startTone(true) } catch (_: Exception) {}
@@ -98,7 +98,8 @@ class AlertService : Service() {
         h.removeCallbacksAndMessages(null)
         h.postDelayed({ stopSelf() }, if (k == "call") 60_000L else 180_000L)
         if (k == "sos") {
-            sosText = (title + "। " + body).replace(Regex("[\\p{So}\\p{Cn}\\uFE0F\\u200D]"), " ").replace(Regex("\\s+"), " ").trim()
+            val say = i?.getStringExtra("d_say") ?: ""
+            sosText = (if (say.isNotEmpty()) say else title + "। " + body).replace(Regex("[\\p{So}\\p{Cn}\\uFE0F\\u200D]"), " ").replace(Regex("\\s+"), " ").trim()
             try { Tts.init(this) } catch (_: Exception) {}
             h.postDelayed(sayCycle, 5000)
         }
