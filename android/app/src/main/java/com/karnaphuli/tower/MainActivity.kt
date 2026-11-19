@@ -189,6 +189,7 @@ open class MainActivity : AppCompatActivity() {
     override fun onPause() { Kt.foreground = false; if (!inCall) web.onPause(); super.onPause() }
     /* v495: the lock-screen copy closes when the user leaves it (no coming back by itself, screen can sleep) */
     override fun onStop() { super.onStop(); if (lockMode && !inCall && !isChangingConfigurations) finish() }
+    override fun onDestroy() { if (lockMode) try { web.evaluateJavascript("try{beepOff()}catch(e){}", null); web.loadUrl("about:blank"); web.destroy() } catch (_: Exception) {}; super.onDestroy() }
     override fun onSaveInstanceState(o: Bundle) { super.onSaveInstanceState(o); web.saveState(o) }
 
     private fun sendToken() { Kt.prefs(this).getString("fcm", null)?.let { giveToken(it) } }
