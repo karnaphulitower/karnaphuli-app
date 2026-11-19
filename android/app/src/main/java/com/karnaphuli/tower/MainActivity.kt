@@ -204,6 +204,7 @@ open class MainActivity : AppCompatActivity() {
         @JavascriptInterface fun openMain() { runOnUiThread { try { startActivity(Intent(this@MainActivity, MainActivity::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)) } catch (_: Exception) {}; if (this@MainActivity.lockMode) finish() } }
         @JavascriptInterface fun quickSos(on: Boolean) { Kt.prefs(this@MainActivity).edit().putBoolean("quick", on).apply(); runOnUiThread { Kt.quick(this@MainActivity) } }
         @JavascriptInterface fun quickSosOn(): Boolean = Kt.prefs(this@MainActivity).getBoolean("quick", true)
+        @JavascriptInterface fun ackCfg(j: String) { Kt.prefs(this@MainActivity).edit().putString("ack", j).apply() }
         @JavascriptInterface fun setBars(top: String, bottom: String) {
             runOnUiThread {
                 try {

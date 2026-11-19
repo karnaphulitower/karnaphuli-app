@@ -12,7 +12,7 @@ class PushService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
         val d = msg.data
         when (d["t"]) {
-            "sos" -> if (!Kt.foreground) AlertService.start(this, "sos", d)
+            "sos" -> { if (!Kt.foreground) AlertService.start(this, "sos", d); ack(d["id"]) }
             "call" -> if (!Kt.foreground) AlertService.start(this, "call", d)
             "callend" -> AlertService.stopIf(this, "call", d["id"])
             "sosend" -> AlertService.stopIf(this, "sos", d["id"])
@@ -50,5 +50,32 @@ class PushService : FirebaseMessagingService() {
         } catch (e: SecurityException) {
         } catch (e: Exception) {
         }
+    }
+
+    /* v500: tell the sender this phone is really ringing (Firestore REST with the saved login) */
+    private fun ack(sid: String?) {
+        if (sid.isNullOrEmpty()) return
+        val cfg = Kt.prefs(this).getString("ack", null) ?: return
+        Thread {
+            try {
+                val c = org.json.JSONObject(cfg)
+                val tk = java.net.URL("https://securetoken.googleapis.com/v1/token?key=" + c.getString("key")).openConnection() as java.net.HttpURLConnection
+                tk.requestMethod = "POST"; tk.doOutput = true; tk.connectTimeout = 15000; tk.readTimeout = 15000
+                tk.setRequestProperty("Content-Type", "application/x-www-form-urlencoded")
+                tk.outputStream.use { it.write(("grant_type=refresh_token&refresh_token=" + java.net.URLEncoder.encode(c.getString("rt"), "UTF-8")).toByteArray()) }
+                val idt = org.json.JSONObject(tk.inputStream.bufferedReader().readText()).getString("id_token")
+                val eid = "r" + c.optString("dev", "x")
+                fun sv(v: String) = org.json.JSONObject().put("stringValue", v)
+                val f = org.json.JSONObject().put("id", sv(eid)).put("sid", sv(sid)).put("k", sv(c.optString("k"))).put("who", sv(c.optString("who")))
+                    .put("flat", sv(c.optString("flat"))).put("kind", sv("ring")).put("dev", sv(c.optString("dev"))).put("com", org.json.JSONObject().put("booleanValue", c.optBoolean("com")))
+                    .put("t", org.json.JSONObject().put("integerValue", System.currentTimeMillis().toString()))
+                val u = java.net.URL("https://firestore.googleapis.com/v1/projects/" + c.getString("proj") + "/databases/(default)/documents/" + c.getString("env") + "/sev_" + sid + "~" + eid)
+                val w = u.openConnection() as java.net.HttpURLConnection
+                w.requestMethod = "POST"; w.setRequestProperty("X-HTTP-Method-Override", "PATCH"); w.doOutput = true; w.connectTimeout = 15000; w.readTimeout = 15000
+                w.setRequestProperty("Content-Type", "application/json"); w.setRequestProperty("Authorization", "Bearer " + idt)
+                w.outputStream.use { it.write(org.json.JSONObject().put("fields", f).toString().toByteArray()) }
+                w.responseCode
+            } catch (_: Exception) {}
+        }.start()
     }
 }
