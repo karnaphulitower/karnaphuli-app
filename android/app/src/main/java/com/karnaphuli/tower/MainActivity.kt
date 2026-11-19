@@ -49,9 +49,9 @@ open class MainActivity : AppCompatActivity() {
     override fun onCreate(b: Bundle?) {
         super.onCreate(b)
         if (lockMode) {
-            if (Build.VERSION.SDK_INT >= 27) { setShowWhenLocked(true); setTurnScreenOn(true) }
+            if (Build.VERSION.SDK_INT >= 27) setShowWhenLocked(true)
             @Suppress("DEPRECATION")
-            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED or android.view.WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON or android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            window.addFlags(android.view.WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED)
         }
         inst = java.lang.ref.WeakReference(this)
         Kt.channels(this)
@@ -187,6 +187,8 @@ open class MainActivity : AppCompatActivity() {
 
     override fun onResume() { super.onResume(); Kt.foreground = true; web.onResume(); sendToken() }
     override fun onPause() { Kt.foreground = false; if (!inCall) web.onPause(); super.onPause() }
+    /* v495: the lock-screen copy closes when the user leaves it (no coming back by itself, screen can sleep) */
+    override fun onStop() { super.onStop(); if (lockMode && !inCall && !isChangingConfigurations) finish() }
     override fun onSaveInstanceState(o: Bundle) { super.onSaveInstanceState(o); web.saveState(o) }
 
     private fun sendToken() { Kt.prefs(this).getString("fcm", null)?.let { giveToken(it) } }
