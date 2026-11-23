@@ -12,21 +12,26 @@ class PushService : FirebaseMessagingService() {
     override fun onMessageReceived(msg: RemoteMessage) {
         val d = msg.data
         when (d["t"]) {
-            "sos" -> { if (!Kt.foreground) AlertService.start(this, "sos", d); ack(d["id"]) }
-            "call" -> if (!Kt.foreground) AlertService.start(this, "call", d)
+            "sos" -> { Kt.prefs(this).edit().putLong("sosT", System.currentTimeMillis()).apply(); if (!Kt.foreground) AlertService.start(this, "sos", d); ack(d["id"]) }
+            "call" -> if (!Kt.foreground) { if (nightQuiet()) note(d) else AlertService.start(this, "call", d) }
             "callend" -> AlertService.stopIf(this, "call", d["id"])
-            "sosend" -> AlertService.stopIf(this, "sos", d["id"])
+            "sosend" -> { Kt.prefs(this).edit().remove("sosT").apply(); AlertService.stopIf(this, "sos", d["id"]) }
             else -> if (!Kt.foreground && !d["title"].isNullOrEmpty()) note(d)
         }
+    }
+
+    /* v505: night 23:00-08:00 Dhaka = silent, unless an SOS arrived in the last 10 minutes */
+    private fun nightQuiet(): Boolean {
+        val h = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Dhaka")).get(java.util.Calendar.HOUR_OF_DAY)
+        if (!(h >= 23 || h < 8)) return false
+        return System.currentTimeMillis() - Kt.prefs(this).getLong("sosT", 0L) > 600000L
     }
 
     /* v244: ordinary app notification (chat, notice, bill, receipt, account) when the app is closed; silent 23:00-08:00 Dhaka */
     private fun note(d: Map<String, String>) {
         try {
             Kt.channels(this)
-            val cal = java.util.Calendar.getInstance(java.util.TimeZone.getTimeZone("Asia/Dhaka"))
-            val h = cal.get(java.util.Calendar.HOUR_OF_DAY)
-            val quiet = h >= 23 || h < 8
+            val quiet = nightQuiet()
             val open = android.content.Intent(this, MainActivity::class.java)
                 .addFlags(android.content.Intent.FLAG_ACTIVITY_NEW_TASK or android.content.Intent.FLAG_ACTIVITY_SINGLE_TOP)
                 .putExtra("go", d["go"] ?: "")
@@ -38,7 +43,7 @@ class PushService : FirebaseMessagingService() {
                 .setSmallIcon(R.drawable.ic_stat)
                 .setColor(0xFF1E3A8A.toInt())
                 .setLargeIcon(android.graphics.BitmapFactory.decodeResource(resources, R.drawable.kt_large))
-                .setContentTitle(d["title"])
+                .setContentTitle(d["title"] ?: (if (d["t"] == "call") "📞 কল এসেছে" else "কর্ণফুলী টাওয়ার"))
                 .setContentText(body)
                 .setStyle(androidx.core.app.NotificationCompat.BigTextStyle().bigText(body))
                 .setAutoCancel(true)
