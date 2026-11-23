@@ -29,12 +29,12 @@ jobs:
       - name: Rename (version + Dhaka date/time in file name)
         env: { GH_TOKEN: '${{ github.token }}' }
         run: |
-          STAMP=$(TZ=Asia/Dhaka date +%H-%M_%d-%m-%y)
-          NAME="KT-App-v2.0.${{ github.run_number }}_${STAMP}.apk"
+          STAMP=$(TZ=Asia/Dhaka date +%d-%m-%y)
+          NAME="Karnaphuli-Tower-2.0.${{ github.run_number }}_${STAMP}.apk"
           cp android/app/build/outputs/apk/release/app-release.apk karnaphuli.apk
           cp android/app/build/outputs/apk/release/app-release.apk "$NAME"
           echo "APK_NAME=$NAME" >> $GITHUB_ENV
-          for x in $(gh release view android-latest --repo ${{ github.repository }} --json assets -q '.assets[].name' 2>/dev/null | grep -E '^(KarnafullyTower-|KT-App-)' || true); do gh release delete-asset android-latest "$x" --repo ${{ github.repository }} -y || true; done
+          for x in $(gh release view android-latest --repo ${{ github.repository }} --json assets -q '.assets[].name' 2>/dev/null | grep -E '^(KarnafullyTower-|KT-App-|Karnaphuli-Tower-)' || true); do gh release delete-asset android-latest "$x" --repo ${{ github.repository }} -y || true; done
       - uses: softprops/action-gh-release@v2
         with:
           tag_name: android-latest
@@ -58,4 +58,5 @@ jobs:
           cp karnaphuli.apk apk/karnaphuli.apk
           T=$(($(date +%s)*1000))
           printf '{"name":"%s","url":"https://karnaphuli-tower.pages.dev/apk/karnaphuli.apk","t":%s,"v":"2.0.%s"}\n' "$APK_NAME" "$T" "${{ github.run_number }}" > apk/apk.json
-          git add apk && git commit -qm "APK ${APK_NAME} on site" && for i in 1 2 3 4; do git pull -q --rebase origin main && git push -q origin main && break; sleep 5; done
+          printf '/apk/karnaphuli.apk\n  Content-Disposition: attachment; filename="%s"\n' "$APK_NAME" > _headers
+          git add apk _headers && git commit -qm "APK ${APK_NAME} on site" && for i in 1 2 3 4; do git pull -q --rebase origin main && git push -q origin main && break; sleep 5; done
