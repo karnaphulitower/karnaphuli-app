@@ -161,6 +161,19 @@ open class MainActivity : AppCompatActivity() {
     }
     private var lastUri: Uri? = null
     private var lastMime: String = "*/*"
+    /* Removes older app copies (.apk) this app saved in Download/Karnaphuli Tower, so only the newest stays */
+    private fun oldApkClean() {
+        if (Build.VERSION.SDK_INT < 29) return
+        try {
+            val col = android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
+            val sel = android.provider.MediaStore.MediaColumns.RELATIVE_PATH + " LIKE ? AND " + android.provider.MediaStore.MediaColumns.DISPLAY_NAME + " LIKE ?"
+            val args = arrayOf(android.os.Environment.DIRECTORY_DOWNLOADS + "/Karnaphuli Tower%", "%.apk")
+            contentResolver.query(col, arrayOf(android.provider.MediaStore.MediaColumns._ID), sel, args, null)?.use { c ->
+                while (c.moveToNext()) try { contentResolver.delete(android.content.ContentUris.withAppendedId(col, c.getLong(0)), null, null) } catch (_: Exception) {}
+            }
+        } catch (_: Exception) {}
+    }
+
     private fun mediaSave(name: String, mime: String, bytes: ByteArray): Uri? {
         return if (Build.VERSION.SDK_INT >= 29) {
             val cv = android.content.ContentValues().apply {
@@ -266,7 +279,7 @@ open class MainActivity : AppCompatActivity() {
                         while (true) { val n = inp.read(buf); if (n < 0) break; out.write(buf, 0, n); got += n
                             if (total > 0) { val pc = (got * 100 / total).toInt(); if (pc != last) { last = pc; runOnUiThread { js("window.ktApkProg&&ktApkProg($pc)") } } } }
                     } }
-                    if (Build.VERSION.SDK_INT >= 29) try { mediaSave(nm, "application/vnd.android.package-archive", f.readBytes()) } catch (_: Exception) {}
+                    if (Build.VERSION.SDK_INT >= 29) { oldApkClean(); try { mediaSave(nm, "application/vnd.android.package-archive", f.readBytes()) } catch (_: Exception) {} }
                     val uri = androidx.core.content.FileProvider.getUriForFile(this@MainActivity, "$packageName.files", f)
                     runOnUiThread {
                         js("window.ktApkProg&&ktApkProg(100)")
